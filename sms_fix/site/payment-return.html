@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>بازگشت به اپ پله</title>
+  <meta name="robots" content="noindex" />
+  <link rel="stylesheet" href="peleh-theme.css" />
+  <style>
+    @font-face{ font-family:'Vazirmatn'; src:url('fonts/Vazirmatn-Variable.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+    body{font-family:'Vazirmatn',tahoma,sans-serif; text-align:center; padding:48px 18px; background:var(--bg); color:var(--text); line-height:1.8;}
+    a.btn{display:inline-block; margin-top:18px; padding:14px 26px; border-radius:16px; background:var(--gold); color:var(--on-gold); font-weight:800; text-decoration:none; font-size:16px;}
+    p.small{font-size:13px; color:var(--muted); line-height:1.9;}
+  </style>
+</head>
+<body>
+  <p id="msg">در حال بازگشت به اپ پله...</p>
+  <a class="btn" id="open" href="#" style="display:none">بازگشت به اپ پله</a>
+  <p class="small" id="hint" style="display:none">اگه خودکار برنگشت، دکمه‌ی بالا رو بزن.<br>پرداختت ثبت شده — به‌محض باز شدن اپ، خودکار تأیید و Premium فعال می‌شه.</p>
+  <script>
+    // زیبال بعد از پرداخت به این صفحه (روی دامنه‌ی واقعی) برمی‌گرده؛ این صفحه کاربر رو با دیپ‌لینک
+    // به خود اپ نصب‌شده برمی‌گردونه تا پرداخت همون‌جا تأیید بشه.
+    // Chrome گاهی باز کردن خودکار اپ بدون لمس کاربر رو بلاک می‌کنه — برای همین دکمه‌ی دستی هم هست.
+    // روی اندروید از intent:// با package مشخص استفاده می‌شه تا هیچ اپ دیگه‌ای نتونه این لینک رو بگیره.
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var trackId = params.get('trackId');
+      if (!trackId) { document.getElementById('msg').textContent = 'اطلاعات پرداخت پیدا نشد.'; return; }
+      var q = 'trackId=' + encodeURIComponent(trackId);
+      ['success', 'status', 'orderId'].forEach(function (k) { var v = params.get(k); if (v != null) q += '&' + k + '=' + encodeURIComponent(v); });
+      var isAndroid = /Android/i.test(navigator.userAgent);
+      var link = isAndroid
+        ? 'intent://payment-return?' + q + '#Intent;scheme=pelehapp;package=ir.pelehapp.app;end'
+        : 'pelehapp://payment-return?' + q;
+      var a = document.getElementById('open');
+      a.href = link;
+      a.style.display = 'inline-block';
+      document.getElementById('hint').style.display = 'block';
+      location.href = link;
+    })();
+  </script>
+</body>
+</html>

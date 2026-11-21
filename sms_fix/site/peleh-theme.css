@@ -1,0 +1,756 @@
+/* =====================================================================================
+   peleh-theme.css — توکن‌های رنگ هر ۱۶ تم پله (منبع واحد برای اپ، پنل مربی و پنل ادمین)
+   این فایل با tools/gen_theme.py از روی پالت ساخته شده؛ هر تم برای همه‌ی توکن‌ها مقدار خودش رو داره.
+   • هر تم = یه کلاس (theme-…) روی body، یا روی هر عنصری که می‌خواد پیش‌نمایش اون تم رو نشون بده.
+   • هیچ رنگی جای دیگه مستقیم نوشته نمی‌شه؛ کامپوننت‌ها فقط از این توکن‌ها استفاده می‌کنن.
+   • کنتراست --muted روی --surface/--surface-2/--surface-3/--bg در همه‌ی تم‌ها ≥ ۴٫۵ به ۱ (WCAG AA).
+   • عمق: تم‌های تیره ← گرادیان ملایم کارت اصلی + هاله‌ی پشت حلقه؛ تم‌های روشن ← فقط سایه‌ی نرم.
+   ===================================================================================== */
+
+/* طلایی و سرمه‌ای (تیره) */
+:root, .theme-goldnavy{
+  --theme-kind:dark;
+  --bg:#0D1830;
+  --surface:#16233F;
+  --surface-2:#1B2A4A;
+  --surface-3:#22345A;
+  --border:#26375A;
+  --divider:#22314F;
+  --text:#F3EFE6;
+  --muted:#B4BED1;
+  --faint:#7D89A3;
+  --gold:#E0B04A;
+  --on-gold:#1A1405;
+  --gold-soft:rgba(224,176,74,0.14);
+  --gold-line:rgba(224,176,74,0.45);
+  --gold-faint:rgba(224,176,74,0.06);
+  --nav-bg:#101C36;
+  --sheet-bg:#13203B;
+  --ctrl-border:#44557A;
+  --track:#23324F;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#0D1830;
+  --scrim:rgba(13,24,48,0.74);
+  --toast-bg:#22345A;
+  --toast-text:#F3EFE6;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(224,176,74,0.15) 0%, rgba(224,176,74,0) 58%), linear-gradient(165deg, #1B2A4A 0%, #16233F 72%);
+  --glow:radial-gradient(closest-side, rgba(224,176,74,0) 60%, rgba(224,176,74,0.22) 76%, rgba(224,176,74,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* زغالی و طلایی (تیره) */
+.theme-charcoal{
+  --theme-kind:dark;
+  --bg:#121213;
+  --surface:#1C1C1E;
+  --surface-2:#232325;
+  --surface-3:#2C2C2F;
+  --border:#323236;
+  --divider:#29292C;
+  --text:#F2EFE9;
+  --muted:#BAB5AD;
+  --faint:#86827B;
+  --gold:#D9AE52;
+  --on-gold:#1A1405;
+  --gold-soft:rgba(217,174,82,0.14);
+  --gold-line:rgba(217,174,82,0.45);
+  --gold-faint:rgba(217,174,82,0.06);
+  --nav-bg:#161617;
+  --sheet-bg:#1A1A1C;
+  --ctrl-border:#4C4C51;
+  --track:#2A2A2D;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#121213;
+  --scrim:rgba(18,18,19,0.74);
+  --toast-bg:#2C2C2F;
+  --toast-text:#F2EFE9;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(217,174,82,0.15) 0%, rgba(217,174,82,0) 58%), linear-gradient(165deg, #232325 0%, #1C1C1E 72%);
+  --glow:radial-gradient(closest-side, rgba(217,174,82,0) 60%, rgba(217,174,82,0.22) 76%, rgba(217,174,82,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* سبز و طلایی (تیره) */
+.theme-emerald{
+  --theme-kind:dark;
+  --bg:#09150F;
+  --surface:#10221A;
+  --surface-2:#152B21;
+  --surface-3:#1B3529;
+  --border:#21402F;
+  --divider:#1A3427;
+  --text:#EEF7F0;
+  --muted:#AAC6B4;
+  --faint:#789283;
+  --gold:#D4B24C;
+  --on-gold:#13140A;
+  --gold-soft:rgba(212,178,76,0.14);
+  --gold-line:rgba(212,178,76,0.45);
+  --gold-faint:rgba(212,178,76,0.06);
+  --nav-bg:#0C1A13;
+  --sheet-bg:#0F1F18;
+  --ctrl-border:#3D5E4C;
+  --track:#1B3326;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#09150F;
+  --scrim:rgba(9,21,15,0.74);
+  --toast-bg:#1B3529;
+  --toast-text:#EEF7F0;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(212,178,76,0.15) 0%, rgba(212,178,76,0) 58%), linear-gradient(165deg, #152B21 0%, #10221A 72%);
+  --glow:radial-gradient(closest-side, rgba(212,178,76,0) 60%, rgba(212,178,76,0.22) 76%, rgba(212,178,76,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* روشن مینیمال (روشن) */
+.theme-light{
+  --theme-kind:light;
+  --bg:#F2F0EB;
+  --surface:#FFFFFF;
+  --surface-2:#F8F6F2;
+  --surface-3:#EEEBE4;
+  --border:#E2DDD3;
+  --divider:#ECE8E0;
+  --text:#1C2230;
+  --muted:#525A69;
+  --faint:#8B909B;
+  --gold:#8F6514;
+  --on-gold:#FFFFFF;
+  --gold-soft:rgba(143,101,20,0.1);
+  --gold-line:rgba(143,101,20,0.45);
+  --gold-faint:rgba(143,101,20,0.05);
+  --nav-bg:#FFFFFF;
+  --sheet-bg:#FFFFFF;
+  --ctrl-border:#BDB6A8;
+  --track:#E9E4DA;
+  --ok:#17704A;
+  --ok-soft:rgba(23,112,74,0.1);
+  --warn:#9A4A0B;
+  --warn-soft:rgba(154,74,11,0.1);
+  --danger:#B42318;
+  --danger-soft:rgba(180,35,24,0.1);
+  --info:#1F55B0;
+  --info-soft:rgba(31,85,176,0.1);
+  --flame:#C2410C;
+  --medal-1:#9C6A0E;
+  --medal-2:#5F6673;
+  --medal-3:#94501F;
+  --on-color:#FFFFFF;
+  --scrim:rgba(28,34,48,0.38);
+  --toast-bg:#1C2230;
+  --toast-text:#FFFFFF;
+  --elev-1:0 1px 2px rgba(28,34,48,0.06), 0 3px 10px rgba(28,34,48,0.05);
+  --elev-2:0 2px 6px rgba(28,34,48,0.07), 0 16px 34px rgba(28,34,48,0.11);
+  --hero-grad:linear-gradient(#FFFFFF, #FFFFFF);
+  --glow:none;
+  --photo-frame:#FFFFFF;
+  --shadow-c:#1C2230;
+  color-scheme:light;
+}
+
+/* قرمز جیگری (تیره) */
+.theme-garnet{
+  --theme-kind:dark;
+  --bg:#1C0A0E;
+  --surface:#281217;
+  --surface-2:#30161C;
+  --surface-3:#3A1B23;
+  --border:#45222A;
+  --divider:#381B21;
+  --text:#F5EFE9;
+  --muted:#CCB6B1;
+  --faint:#957C78;
+  --gold:#D9824B;
+  --on-gold:#1A0A05;
+  --gold-soft:rgba(217,130,75,0.14);
+  --gold-line:rgba(217,130,75,0.45);
+  --gold-faint:rgba(217,130,75,0.06);
+  --nav-bg:#210D11;
+  --sheet-bg:#261115;
+  --ctrl-border:#6A3A40;
+  --track:#3A1A21;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#1C0A0E;
+  --scrim:rgba(28,10,14,0.74);
+  --toast-bg:#3A1B23;
+  --toast-text:#F5EFE9;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(217,130,75,0.15) 0%, rgba(217,130,75,0) 58%), linear-gradient(165deg, #30161C 0%, #281217 72%);
+  --glow:radial-gradient(closest-side, rgba(217,130,75,0) 60%, rgba(217,130,75,0.22) 76%, rgba(217,130,75,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* قرمز روشن و سفید (روشن) */
+.theme-crimson{
+  --theme-kind:light;
+  --bg:#FFF6F5;
+  --surface:#FFFFFF;
+  --surface-2:#FFF1EF;
+  --surface-3:#FBE5E2;
+  --border:#F1D3CF;
+  --divider:#F6E1DE;
+  --text:#241414;
+  --muted:#6A4F4D;
+  --faint:#9B8583;
+  --gold:#C42B25;
+  --on-gold:#FFFFFF;
+  --gold-soft:rgba(196,43,37,0.1);
+  --gold-line:rgba(196,43,37,0.45);
+  --gold-faint:rgba(196,43,37,0.05);
+  --nav-bg:#FFFFFF;
+  --sheet-bg:#FFFFFF;
+  --ctrl-border:#DDB2AD;
+  --track:#F7E0DC;
+  --ok:#17704A;
+  --ok-soft:rgba(23,112,74,0.1);
+  --warn:#9A4A0B;
+  --warn-soft:rgba(154,74,11,0.1);
+  --danger:#B42318;
+  --danger-soft:rgba(180,35,24,0.1);
+  --info:#1F55B0;
+  --info-soft:rgba(31,85,176,0.1);
+  --flame:#C2410C;
+  --medal-1:#9C6A0E;
+  --medal-2:#5F6673;
+  --medal-3:#94501F;
+  --on-color:#FFFFFF;
+  --scrim:rgba(36,20,20,0.38);
+  --toast-bg:#241414;
+  --toast-text:#FFFFFF;
+  --elev-1:0 1px 2px rgba(36,20,20,0.06), 0 3px 10px rgba(36,20,20,0.05);
+  --elev-2:0 2px 6px rgba(36,20,20,0.07), 0 16px 34px rgba(36,20,20,0.11);
+  --hero-grad:linear-gradient(#FFFFFF, #FFFFFF);
+  --glow:none;
+  --photo-frame:#FFFFFF;
+  --shadow-c:#241414;
+  color-scheme:light;
+}
+
+/* برنزی (تیره) */
+.theme-bronze{
+  --theme-kind:dark;
+  --bg:#130B06;
+  --surface:#1E130B;
+  --surface-2:#26190F;
+  --surface-3:#302014;
+  --border:#3A2818;
+  --divider:#2D1F14;
+  --text:#F5E9DF;
+  --muted:#C9B5A5;
+  --faint:#927E6F;
+  --gold:#D58C4D;
+  --on-gold:#1A0E05;
+  --gold-soft:rgba(213,140,77,0.14);
+  --gold-line:rgba(213,140,77,0.45);
+  --gold-faint:rgba(213,140,77,0.06);
+  --nav-bg:#170E08;
+  --sheet-bg:#1B110A;
+  --ctrl-border:#5C4330;
+  --track:#2E1F13;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#130B06;
+  --scrim:rgba(19,11,6,0.74);
+  --toast-bg:#302014;
+  --toast-text:#F5E9DF;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(213,140,77,0.15) 0%, rgba(213,140,77,0) 58%), linear-gradient(165deg, #26190F 0%, #1E130B 72%);
+  --glow:radial-gradient(closest-side, rgba(213,140,77,0) 60%, rgba(213,140,77,0.22) 76%, rgba(213,140,77,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* نقره‌ای (تیره) */
+.theme-silver{
+  --theme-kind:dark;
+  --bg:#0F1216;
+  --surface:#181C22;
+  --surface-2:#1E232A;
+  --surface-3:#262C34;
+  --border:#2E343D;
+  --divider:#242931;
+  --text:#EEF0F3;
+  --muted:#B6BCC6;
+  --faint:#848B96;
+  --gold:#D3D8DF;
+  --on-gold:#14171C;
+  --gold-soft:rgba(211,216,223,0.14);
+  --gold-line:rgba(211,216,223,0.45);
+  --gold-faint:rgba(211,216,223,0.06);
+  --nav-bg:#12151A;
+  --sheet-bg:#161A1F;
+  --ctrl-border:#4A525E;
+  --track:#262B33;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#0F1216;
+  --scrim:rgba(15,18,22,0.74);
+  --toast-bg:#262C34;
+  --toast-text:#EEF0F3;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(211,216,223,0.15) 0%, rgba(211,216,223,0) 58%), linear-gradient(165deg, #1E232A 0%, #181C22 72%);
+  --glow:radial-gradient(closest-side, rgba(211,216,223,0) 60%, rgba(211,216,223,0.22) 76%, rgba(211,216,223,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* رزگلد (تیره) */
+.theme-rosegold{
+  --theme-kind:dark;
+  --bg:#170D10;
+  --surface:#231419;
+  --surface-2:#2B191F;
+  --surface-3:#352027;
+  --border:#3F262E;
+  --divider:#321E25;
+  --text:#F7EBE9;
+  --muted:#CFB8B6;
+  --faint:#9A8381;
+  --gold:#EBAAA4;
+  --on-gold:#2A1214;
+  --gold-soft:rgba(235,170,164,0.14);
+  --gold-line:rgba(235,170,164,0.45);
+  --gold-faint:rgba(235,170,164,0.06);
+  --nav-bg:#1B1013;
+  --sheet-bg:#201217;
+  --ctrl-border:#63414A;
+  --track:#33202A;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#170D10;
+  --scrim:rgba(23,13,16,0.74);
+  --toast-bg:#352027;
+  --toast-text:#F7EBE9;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(235,170,164,0.15) 0%, rgba(235,170,164,0) 58%), linear-gradient(165deg, #2B191F 0%, #231419 72%);
+  --glow:radial-gradient(closest-side, rgba(235,170,164,0) 60%, rgba(235,170,164,0.22) 76%, rgba(235,170,164,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* یاقوت‌کبود (تیره) */
+.theme-sapphire{
+  --theme-kind:dark;
+  --bg:#07101B;
+  --surface:#0E192B;
+  --surface-2:#132135;
+  --surface-3:#192A43;
+  --border:#1F3250;
+  --divider:#182941;
+  --text:#E9F0FB;
+  --muted:#ABBAD1;
+  --faint:#7686A0;
+  --gold:#66A0F4;
+  --on-gold:#06101F;
+  --gold-soft:rgba(102,160,244,0.14);
+  --gold-line:rgba(102,160,244,0.45);
+  --gold-faint:rgba(102,160,244,0.06);
+  --nav-bg:#0A1423;
+  --sheet-bg:#0D1729;
+  --ctrl-border:#3A507A;
+  --track:#172741;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#07101B;
+  --scrim:rgba(7,16,27,0.74);
+  --toast-bg:#192A43;
+  --toast-text:#E9F0FB;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(102,160,244,0.15) 0%, rgba(102,160,244,0) 58%), linear-gradient(165deg, #132135 0%, #0E192B 72%);
+  --glow:radial-gradient(closest-side, rgba(102,160,244,0) 60%, rgba(102,160,244,0.22) 76%, rgba(102,160,244,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* زمرد مشکی (تیره) */
+.theme-emeraldnoir{
+  --theme-kind:dark;
+  --bg:#030A05;
+  --surface:#0A150E;
+  --surface-2:#0E1D13;
+  --surface-3:#132719;
+  --border:#183020;
+  --divider:#112418;
+  --text:#E8F9EE;
+  --muted:#A8C9B3;
+  --faint:#73927E;
+  --gold:#3AD37E;
+  --on-gold:#03140A;
+  --gold-soft:rgba(58,211,126,0.14);
+  --gold-line:rgba(58,211,126,0.45);
+  --gold-faint:rgba(58,211,126,0.06);
+  --nav-bg:#060F09;
+  --sheet-bg:#08130C;
+  --ctrl-border:#2C5039;
+  --track:#122619;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#030A05;
+  --scrim:rgba(3,10,5,0.74);
+  --toast-bg:#132719;
+  --toast-text:#E8F9EE;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(58,211,126,0.15) 0%, rgba(58,211,126,0) 58%), linear-gradient(165deg, #0E1D13 0%, #0A150E 72%);
+  --glow:radial-gradient(closest-side, rgba(58,211,126,0) 60%, rgba(58,211,126,0.22) 76%, rgba(58,211,126,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* آمتیست (تیره) */
+.theme-amethyst{
+  --theme-kind:dark;
+  --bg:#110918;
+  --surface:#1A1025;
+  --surface-2:#21142F;
+  --surface-3:#29193A;
+  --border:#321F45;
+  --divider:#271838;
+  --text:#F1E9F9;
+  --muted:#C4B4D5;
+  --faint:#8F7FA2;
+  --gold:#B585E8;
+  --on-gold:#140A1F;
+  --gold-soft:rgba(181,133,232,0.14);
+  --gold-line:rgba(181,133,232,0.45);
+  --gold-faint:rgba(181,133,232,0.06);
+  --nav-bg:#150C1E;
+  --sheet-bg:#190F23;
+  --ctrl-border:#533B6C;
+  --track:#281A39;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#110918;
+  --scrim:rgba(17,9,24,0.74);
+  --toast-bg:#29193A;
+  --toast-text:#F1E9F9;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(181,133,232,0.15) 0%, rgba(181,133,232,0) 58%), linear-gradient(165deg, #21142F 0%, #1A1025 72%);
+  --glow:radial-gradient(closest-side, rgba(181,133,232,0) 60%, rgba(181,133,232,0.22) 76%, rgba(181,133,232,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* یاقوت‌سرخ مشکی (تیره) */
+.theme-rubynoir{
+  --theme-kind:dark;
+  --bg:#110304;
+  --surface:#1C090B;
+  --surface-2:#240C0F;
+  --surface-3:#2E1014;
+  --border:#3A1519;
+  --divider:#2B0F12;
+  --text:#F9E9EA;
+  --muted:#D1B3B5;
+  --faint:#9A7C7E;
+  --gold:#EA5359;
+  --on-gold:#1A0405;
+  --gold-soft:rgba(234,83,89,0.14);
+  --gold-line:rgba(234,83,89,0.45);
+  --gold-faint:rgba(234,83,89,0.06);
+  --nav-bg:#150506;
+  --sheet-bg:#1A080A;
+  --ctrl-border:#5E2B30;
+  --track:#2D1014;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#110304;
+  --scrim:rgba(17,3,4,0.74);
+  --toast-bg:#2E1014;
+  --toast-text:#F9E9EA;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(234,83,89,0.15) 0%, rgba(234,83,89,0) 58%), linear-gradient(165deg, #240C0F 0%, #1C090B 72%);
+  --glow:radial-gradient(closest-side, rgba(234,83,89,0) 60%, rgba(234,83,89,0.22) 76%, rgba(234,83,89,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* پلاتینیوم (تیره) */
+.theme-platinum{
+  --theme-kind:dark;
+  --bg:#0C0E11;
+  --surface:#15181C;
+  --surface-2:#1B1F24;
+  --surface-3:#23282E;
+  --border:#2A2F36;
+  --divider:#21252B;
+  --text:#F3F5F7;
+  --muted:#B8BFC8;
+  --faint:#858C96;
+  --gold:#E6EAEF;
+  --on-gold:#121417;
+  --gold-soft:rgba(230,234,239,0.14);
+  --gold-line:rgba(230,234,239,0.45);
+  --gold-faint:rgba(230,234,239,0.06);
+  --nav-bg:#101215;
+  --sheet-bg:#14171B;
+  --ctrl-border:#4A515B;
+  --track:#23272D;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#0C0E11;
+  --scrim:rgba(12,14,17,0.74);
+  --toast-bg:#23282E;
+  --toast-text:#F3F5F7;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(230,234,239,0.15) 0%, rgba(230,234,239,0) 58%), linear-gradient(165deg, #1B1F24 0%, #15181C 72%);
+  --glow:radial-gradient(closest-side, rgba(230,234,239,0) 60%, rgba(230,234,239,0.22) 76%, rgba(230,234,239,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* طلایی درخشان (تیره) */
+.theme-obsidian{
+  --theme-kind:dark;
+  --bg:#000000;
+  --surface:#0E0E0B;
+  --surface-2:#15140F;
+  --surface-3:#1D1C14;
+  --border:#2A2716;
+  --divider:#1E1C12;
+  --text:#FDF6E3;
+  --muted:#CBC2A8;
+  --faint:#8F8770;
+  --gold:#FFD76A;
+  --on-gold:#1A1405;
+  --gold-soft:rgba(255,215,106,0.14);
+  --gold-line:rgba(255,215,106,0.45);
+  --gold-faint:rgba(255,215,106,0.06);
+  --nav-bg:#070706;
+  --sheet-bg:#0C0C0A;
+  --ctrl-border:#4D4626;
+  --track:#1C1B12;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#000000;
+  --scrim:rgba(0,0,0,0.74);
+  --toast-bg:#1D1C14;
+  --toast-text:#FDF6E3;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(255,215,106,0.15) 0%, rgba(255,215,106,0) 58%), linear-gradient(165deg, #15140F 0%, #0E0E0B 72%);
+  --glow:radial-gradient(closest-side, rgba(255,215,106,0) 60%, rgba(255,215,106,0.22) 76%, rgba(255,215,106,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* الماس (تیره) */
+.theme-diamond{
+  --theme-kind:dark;
+  --bg:#030508;
+  --surface:#0A1015;
+  --surface-2:#0F171E;
+  --surface-3:#142028;
+  --border:#1B2A35;
+  --divider:#15222B;
+  --text:#F2FCFF;
+  --muted:#B1C8D0;
+  --faint:#7895A0;
+  --gold:#BDF3FF;
+  --on-gold:#04121A;
+  --gold-soft:rgba(189,243,255,0.14);
+  --gold-line:rgba(189,243,255,0.45);
+  --gold-faint:rgba(189,243,255,0.06);
+  --nav-bg:#060A0E;
+  --sheet-bg:#091014;
+  --ctrl-border:#355260;
+  --track:#14212A;
+  --ok:#7FD9AE;
+  --ok-soft:rgba(127,217,174,0.14);
+  --warn:#F2A877;
+  --warn-soft:rgba(242,168,119,0.14);
+  --danger:#F49393;
+  --danger-soft:rgba(244,147,147,0.14);
+  --info:#86B8FF;
+  --info-soft:rgba(134,184,255,0.14);
+  --flame:#F08A4B;
+  --medal-1:#E8BE5A;
+  --medal-2:#C9CED8;
+  --medal-3:#D79565;
+  --on-color:#030508;
+  --scrim:rgba(3,5,8,0.74);
+  --toast-bg:#142028;
+  --toast-text:#F2FCFF;
+  --elev-1:0 1px 2px rgba(0,0,0,.30);
+  --elev-2:0 14px 32px rgba(0,0,0,.42);
+  --hero-grad:radial-gradient(120% 95% at 100% 0%, rgba(189,243,255,0.15) 0%, rgba(189,243,255,0) 58%), linear-gradient(165deg, #0F171E 0%, #0A1015 72%);
+  --glow:radial-gradient(closest-side, rgba(189,243,255,0) 60%, rgba(189,243,255,0.22) 76%, rgba(189,243,255,0) 100%);
+  --photo-frame:#FFFFFF;
+  --shadow-c:#000000;
+  color-scheme:dark;
+}
+
+/* نام‌های قدیمی توکن‌ها (کد قبلی و inline styleها) — روی هر محدوده‌ی تم دوباره حساب می‌شن */
+body, .theme-scope{
+  --navy: var(--bg); --navy-deep: var(--on-gold);
+  --card: var(--surface); --card-strong: var(--surface-2); --card-2: var(--surface-2);
+  --line: var(--divider);
+  --glass-fill: var(--surface); --glass-fill-strong: var(--surface-2); --glass-border: var(--border); --glass-shadow: var(--elev-1);
+  --surf-a: var(--surface-2); --surf-b: var(--surface-3); --surf-c: var(--track);
+  --cell-empty: var(--surface-2); --cell-empty-text: var(--muted);
+  --bg-gradient: var(--bg);
+  --emerald: var(--ok); --emerald-soft: var(--ok-soft); --rose: var(--danger); --rose-soft: var(--danger-soft); --amber: var(--warn);
+}

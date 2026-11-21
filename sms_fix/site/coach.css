@@ -1,0 +1,171 @@
+/* ===================== پله — پنل مربی (طراحی جدید، فقط توکن‌های peleh-theme.css) ===================== */
+:root{ --radius:22px; --tap:44px; }
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ margin:0; padding:0; }
+body{ font-family:'Vazirmatn', Tahoma, sans-serif; color:var(--text); min-height:100vh; background:var(--bg); line-height:1.7; -webkit-font-smoothing:antialiased; }
+button, input, select, textarea{ font-family:inherit; font-size:inherit; color:inherit; }
+button{ cursor:pointer; border:none; background:none; }
+:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+.pi{ width:1.15em; height:1.15em; display:inline-block; vertical-align:-.22em; flex:none; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.pi-fill{ fill:currentColor; } .pi-gold{ color:var(--gold); } .pi-ok{ color:var(--ok); } .pi-warn{ color:var(--warn); } .pi-danger{ color:var(--danger); } .pi-muted{ color:var(--muted); }
+.pi-flame{ color:var(--flame); } .pi-m1{ color:var(--medal-1); } .pi-m2{ color:var(--medal-2); } .pi-m3{ color:var(--medal-3); } .pi-dot{ width:.7em; height:.7em; }
+.c-root{ max-width:760px; margin:0 auto; padding:calc(14px + env(safe-area-inset-top)) 20px calc(110px + env(safe-area-inset-bottom)); }
+.c-root.no-nav{ padding-bottom:calc(40px + env(safe-area-inset-bottom)); }
+.c-root.has-bar{ padding-bottom:calc(120px + env(safe-area-inset-bottom)); }
+.c-loading{ text-align:center; padding-top:40vh; color:var(--muted); }
+
+/* سربرگ */
+.c-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; }
+.c-brand{ font-weight:900; font-size:20px; display:flex; align-items:center; gap:8px; }
+.c-brand .brand-mark{ width:26px; height:19px; color:var(--gold); display:block; }
+.c-brand small{ color:var(--muted); font-weight:700; font-size:13px; }
+.c-link{ color:var(--muted); font-size:13px; text-decoration:underline; text-underline-offset:3px; min-height:var(--tap); padding:0 6px; display:inline-flex; align-items:center; gap:6px; }
+.c-head{ display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.c-head .grow{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.c-hello{ font-size:19px; font-weight:800; }
+.c-verified{ display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); }
+.c-verified .pi{ color:var(--ok); }
+.c-avatar{ width:48px; height:48px; flex:none; border-radius:16px; background:var(--surface-3); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:900; color:var(--text); overflow:hidden; }
+.c-avatar img{ width:100%; height:100%; object-fit:cover; }
+.c-avatar.sm{ width:42px; height:42px; border-radius:14px; font-size:16px; font-weight:800; }
+.c-iconbtn, .c-back{ width:var(--tap); height:var(--tap); flex:none; border-radius:14px; border:1px solid var(--border); background:var(--surface); color:var(--text);
+  display:inline-flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:var(--elev-1); }
+.c-iconbtn .pi, .c-back .pi{ width:20px; height:20px; }
+.c-kicker{ font-size:12.5px; color:var(--muted); font-weight:600; }
+.c-title-input{ width:100%; padding:0; border:none; background:transparent; color:var(--text); font-size:19px; font-weight:800; outline:none; border-bottom:1px dashed transparent; }
+.c-title-input:focus{ border-bottom-color:var(--gold-line); }
+.c-save-state{ font-size:12.5px; color:var(--muted); white-space:nowrap; display:inline-flex; align-items:center; gap:4px; }
+.c-save-state.ok{ color:var(--ok); }
+.c-save-state.err{ color:var(--danger); }
+
+/* آمار بالا: عددهای درشت */
+.c-stats{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; margin-bottom:16px; }
+.c-stat{ display:flex; flex-direction:column; gap:2px; padding:14px; border-radius:18px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--elev-1); text-align:start; color:var(--text); }
+.c-stat b{ font-size:30px; font-weight:900; line-height:1.15; }
+.c-stat span{ font-size:12.5px; color:var(--muted); }
+.c-stat.warn{ background:var(--warn-soft); border-color:var(--warn-soft); }
+.c-stat.warn b{ color:var(--warn); }
+.c-stat.hl b{ color:var(--text); }
+
+/* کارت‌ها */
+.c-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:14px; box-shadow:var(--elev-1); }
+.c-card.list{ padding:0 16px; overflow:hidden; }
+.c-card.gold{ border-color:var(--gold-line); }
+.c-card.hero{ background:var(--hero-grad); box-shadow:var(--elev-2); }
+.c-card.raised{ background:var(--surface-2); }
+.c-h{ font-weight:700; font-size:17px; margin:24px 2px 12px; display:flex; align-items:center; justify-content:flex-start; gap:10px; }
+.c-h::before{ content:""; width:4px; height:18px; border-radius:2px; background:var(--gold); flex:none; }
+.c-h.warn::before{ background:var(--warn); }
+.c-h > .c-btn, .c-h > button, .c-h > a, .c-h > .c-badge{ margin-inline-start:auto; }
+.c-h .pi{ color:var(--muted); }
+.c-note{ color:var(--muted); font-size:13px; line-height:1.9; }
+.c-err{ color:var(--danger); font-size:13px; min-height:16px; margin:6px 0; }
+.c-codecard{ display:flex; flex-direction:column; gap:14px; }
+.c-codecard .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.c-code{ direction:ltr; font-size:30px; font-weight:900; letter-spacing:6px; color:var(--text); margin:0; }
+
+/* دکمه‌ها */
+.c-btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:48px; padding:10px 18px; border-radius:16px; font-weight:800; font-size:14.5px; }
+.c-btn .pi{ width:18px; height:18px; }
+.c-btn.primary{ background:var(--gold); color:var(--on-gold); }
+.c-btn.ghost{ background:var(--surface-2); border:1px solid var(--border); color:var(--text); }
+.c-btn.danger{ background:var(--danger-soft); color:var(--danger); }
+.c-btn.dashed{ background:transparent; border:1.5px dashed var(--ctrl-border); color:var(--text); }
+.c-btn.block{ width:100%; }
+.c-btn.sm{ min-height:40px; padding:6px 14px; font-size:13.5px; border-radius:12px; }
+.c-btn:disabled{ opacity:.5; cursor:default; }
+.c-row-btns{ display:flex; gap:8px; flex-wrap:wrap; }
+.c-row-btns .c-btn{ flex:1 1 140px; }
+
+/* فرم */
+.c-field{ margin-bottom:14px; }
+.c-field label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px; font-weight:600; }
+.c-input{ width:100%; min-height:48px; padding:10px 14px; border-radius:14px; background:var(--surface-2); border:1px solid var(--border); outline:none; color:var(--text); }
+.c-input:focus{ border-color:var(--gold); }
+.c-input::placeholder{ color:var(--muted); opacity:1; }
+textarea.c-input{ min-height:96px; resize:vertical; line-height:1.8; }
+.c-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.c-chip{ min-height:40px; padding:6px 14px; border-radius:999px; background:var(--surface-2); border:1px solid var(--border); font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:6px; }
+.c-chip.on{ background:var(--gold); color:var(--on-gold); border-color:var(--gold); }
+.c-badge{ display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:800; background:var(--surface-3); color:var(--text); white-space:nowrap; }
+.c-badge.green{ background:var(--ok-soft); color:var(--ok); }
+.c-badge.red{ background:var(--danger-soft); color:var(--danger); }
+.c-badge.warn{ background:var(--warn-soft); color:var(--warn); }
+.c-badge.gray{ background:var(--surface-2); color:var(--muted); }
+.c-badge.gold{ background:var(--gold); color:var(--on-gold); }
+
+/* فهرست‌ها */
+.c-list-row{ display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--divider); min-height:68px; }
+.c-list-row:last-child{ border-bottom:none; }
+.c-list-row .grow{ flex:1; min-width:0; }
+.c-list-row.click{ cursor:pointer; }
+.c-list-row .chev{ color:var(--faint); display:flex; }
+.c-name{ font-weight:700; font-size:15px; }
+.c-dot{ width:8px; height:8px; border-radius:50%; display:inline-block; background:var(--faint); flex:none; }
+.c-dot.warn{ background:var(--warn); } .c-dot.red{ background:var(--danger); } .c-dot.green{ background:var(--ok); }
+.c-sub{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted); }
+.c-sub.warn{ color:var(--warn); } .c-sub.red{ color:var(--danger); }
+.c-tabs{ display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:14px; }
+.c-tab{ flex:none; min-height:var(--tap); padding:0 16px; border-radius:14px; background:var(--surface); border:1px solid var(--border); color:var(--muted); font-weight:700; font-size:13.5px; }
+.c-tab.on{ background:var(--gold); border-color:var(--gold); color:var(--on-gold); font-weight:800; }
+.c-tab.add{ border-style:dashed; border-color:var(--ctrl-border); color:var(--text); width:var(--tap); padding:0; }
+
+/* برنامه‌ساز */
+.c-item{ border:1px solid var(--border); border-radius:20px; padding:14px; margin-bottom:10px; background:var(--surface-2); }
+.c-item-head{ display:flex; align-items:center; gap:6px; }
+.c-item-head .grow{ flex:1; font-weight:800; font-size:15.5px; min-width:0; }
+.c-icon-btn{ width:40px; height:40px; border-radius:12px; background:var(--surface-3); color:var(--muted); flex:none; display:inline-flex; align-items:center; justify-content:center; }
+.c-icon-btn .pi{ width:17px; height:17px; }
+.c-steppers{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.c-stepper{ display:flex; align-items:center; gap:2px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:2px; }
+.c-stepper span{ min-width:64px; text-align:center; font-size:13.5px; font-weight:800; }
+.c-stepper button{ width:var(--tap); height:var(--tap); border-radius:12px; background:var(--surface-3); color:var(--text); font-size:18px; font-weight:900; display:inline-flex; align-items:center; justify-content:center; }
+.c-weight{ width:88px; min-height:var(--tap); text-align:center; direction:ltr; }
+.c-sets-grid{ display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; margin-top:10px; padding:12px; border-radius:16px; background:var(--surface); border:1px solid var(--border); }
+.c-sets-grid .c-note{ flex:1 1 100%; color:var(--text); font-weight:700; }
+.c-set-cell{ display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--muted); width:84px; }
+.c-set-cell .c-input{ min-height:var(--tap); text-align:center; direction:ltr; padding:6px; font-weight:800; }
+.c-item.superset{ border-color:var(--gold-line); }
+.c-item.ss-first{ border-bottom-left-radius:6px; border-bottom-right-radius:6px; margin-bottom:4px; }
+.c-item.ss-second{ border-top-left-radius:6px; border-top-right-radius:6px; }
+.c-ss-label{ font-size:12.5px; color:var(--text); font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+.c-ss-label .pi{ color:var(--gold); }
+
+/* برگه و پیام */
+.c-sheet-wrap{ position:fixed; inset:0; background:var(--scrim); display:none; align-items:flex-end; justify-content:center; z-index:50; }
+.c-sheet-wrap.show{ display:flex; }
+.c-sheet{ width:100%; max-width:760px; max-height:88vh; overflow:auto; background:var(--sheet-bg); border:1px solid var(--border); border-bottom:none;
+  border-radius:26px 26px 0 0; padding:20px 18px calc(20px + env(safe-area-inset-bottom)); box-shadow:var(--elev-2); }
+.c-sheet h3{ margin:0 0 14px; font-size:18px; }
+.c-pick{ display:flex; align-items:center; gap:10px; width:100%; text-align:start; padding:10px 8px; border-bottom:1px solid var(--divider); min-height:54px; border-radius:10px; }
+.c-pick .grow{ flex:1; min-width:0; }
+.c-pick.added{ background:var(--gold-soft); }
+.c-toast{ position:fixed; left:50%; bottom:calc(100px + env(safe-area-inset-bottom)); transform:translate(-50%, 16px); opacity:0; pointer-events:none;
+  background:var(--toast-bg); color:var(--toast-text); border:1px solid var(--border); padding:12px 16px; border-radius:16px; font-weight:700; font-size:14px; z-index:60; transition:.18s; max-width:92vw; box-shadow:var(--elev-2); }
+.c-toast.show{ opacity:1; transform:translate(-50%, 0); }
+.c-bar{ position:fixed; left:0; right:0; bottom:0; background:var(--nav-bg); border-top:1px solid var(--border); box-shadow:var(--elev-2);
+  padding:14px 16px calc(14px + env(safe-area-inset-bottom)); display:grid; grid-template-columns:1fr 2fr; gap:10px; z-index:40; }
+.c-bar .c-btn{ width:100%; max-width:none; min-height:52px; }
+.c-sheet .c-bar{ grid-template-columns:repeat(auto-fit, minmax(0, 1fr)); z-index:55; max-width:760px; margin:0 auto; }
+.c-cred{ padding:12px 0; border-bottom:1px solid var(--divider); }
+.c-cred:last-child{ border-bottom:none; }
+.c-check{ display:flex; align-items:center; gap:10px; min-height:var(--tap); font-size:14px; }
+.c-check input{ width:22px; height:22px; accent-color:var(--gold); }
+
+/* منوی پایین مربی: ۴ تب */
+.c-nav{ position:fixed; left:0; right:0; bottom:0; z-index:30; max-width:760px; margin:0 auto; display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:4px;
+  padding:10px 12px calc(12px + env(safe-area-inset-bottom)); background:var(--nav-bg); border-top:1px solid var(--border); border-radius:26px 26px 0 0; box-shadow:var(--elev-2); }
+.c-nav button{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; min-height:56px; border-radius:18px; color:var(--muted); font-size:12px; font-weight:700; position:relative; }
+.c-nav button .pi{ width:22px; height:22px; }
+.c-nav button.on{ background:var(--gold); color:var(--on-gold); font-weight:800; }
+.c-nav .badge-dot{ position:absolute; top:8px; left:calc(50% - 17px); width:9px; height:9px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 2px var(--nav-bg); }
+.c-nav button.on .badge-dot{ background:var(--on-gold); box-shadow:none; }
+@media (min-width:700px){ .c-root{ padding-top:28px; } .c-sheet{ border-radius:26px; margin-bottom:24px; border-bottom:1px solid var(--border); } .c-sheet-wrap{ align-items:center; } }
+@media (prefers-reduced-motion: reduce){ .c-toast{ transition:none; } }
+/* v2.4.0: قالب‌های شخصی، اعمال روی چند شاگرد، BMI و عکس پیشرفت */
+.c-iconbtn.sm{ width:40px; height:40px; min-width:40px; }
+.c-radio{ display:flex; align-items:flex-start; gap:10px; min-height:44px; padding:6px 0; font-size:14px; line-height:1.8; cursor:pointer; }
+.c-radio input{ width:20px; height:20px; margin-top:4px; accent-color:var(--gold); flex:none; }
+.c-list-row input[type=checkbox]{ width:22px; height:22px; accent-color:var(--gold); flex:none; }
+.c-badge.gold{ background:var(--gold-soft); color:var(--gold); }
+.c-stat.warn b{ color:var(--warn); }

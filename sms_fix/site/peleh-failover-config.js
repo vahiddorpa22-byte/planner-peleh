@@ -1,0 +1,2 @@
+/* LOCAL TEST ONLY: failover disabled (placeholder key => peleh-failover.js does nothing, no request to api.pelehapp.ir) */
+window.PELEH_FAILOVER = { fallbackUrl: "http://127.0.0.1:9/", fallbackKey: "PASTE_DISABLED_FOR_LOCAL_TEST" };

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><meta charset="utf-8"><title>sms-fix local tests</title>
+<!-- LOCAL TEST ONLY. Loads index.html?scn=... (in-memory mock backend) in an iframe and checks the sms-fix behaviour. -->
+<body style="font-family:monospace">
+<pre id="out">running…</pre>
+<iframe id="f" style="width:390px;height:844px;border:1px solid #888"></iframe>
+<script>
+const out = [];
+const ok = (c, m) => out.push((c ? "PASS " : "FAIL ") + m);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const f = document.getElementById("f");
+async function load(scn){
+  try{ localStorage.clear(); }catch(e){}
+  f.src = "index.html?scn=" + scn + "&t=" + Date.now();
+  await new Promise(r => f.onload = r);
+  await sleep(1500);
+  return f.contentWindow;
+}
+const ev = (w, s) => w.eval(s);
+const btnWith = (w, t) => [...w.document.querySelectorAll("button")].find(b => b.textContent.includes(t));
+const invokes = (w, from) => w.__mock.calls.slice(from).filter(c => c.invoke);
+
+(async () => {
+  let w;
+  // A. signed out — phone screen
+  w = await load("signed_out");
+  ok(ev(w,"authMode") === "signup_phone", "A1 signed out lands on phone screen");
+  ok(!!btnWith(w, "ادامه با گوگل"), "A2 Google button present");
+  ok([...w.document.querySelectorAll(".note")].some(n => n.textContent.includes("خارج از ایرانی؟")), "A3 abroad hint shown");
+  let n = w.__mock.calls.length;
+  w.document.getElementById("auth_phone").value = "+1 415 555 0123"; await w.submitSignupPhoneStep();
+  ok(ev(w,"authError === INTL_PHONE_MSG") && ev(w,"authError").length > 0, "A4 +1 number -> abroad message");
+  ok(invokes(w, n).length === 0, "A5 +1 number -> no send-otp call");
+  ok(![...w.document.querySelectorAll(".note")].some(nn => nn.textContent.includes("خارج از ایرانی؟")), "A6 hint hidden while abroad error shown");
+  w.document.getElementById("auth_phone").value = "0912"; await w.submitSignupPhoneStep();
+  ok(ev(w,"authError === PHONE_INVALID_MSG") && ev(w,"authError").length > 0, "A7 short number -> old invalid message");
+  n = w.__mock.calls.length;
+  w.document.getElementById("auth_phone").value = "+98 912 123 4567"; await w.submitSignupPhoneStep();
+  const ir = invokes(w, n);
+  ok(ir.length === 1 && ir[0].invoke === "send-otp" && ir[0].body.mobile === "09121234567" && ev(w,"authMode") === "signup_phone_otp", "A8 Iranian number -> send-otp 0912… (unchanged)");
+
+  // B. Google, brand-new (= the 3 stuck production accounts: no name/phone/habits)
+  w = await load("google_new");
+  ok(w.needsOnboarding() && !!w.document.getElementById("ob_phone"), "B1 onboarding with phone field");
+  const skip = btnWith(w, "شماره‌ی ایرانی ندارم");
+  ok(!!skip, "B2 'no Iranian number' button visible");
+  w.document.getElementById("ob_phone").value = "+49 151 2345678";
+  n = w.__mock.calls.length; await w.sendObPhoneOtp();
+  ok(w.document.getElementById("ob_phone_error").textContent.includes("شماره‌ی ایرانی ندارم") && invokes(w, n).length === 0, "B3 foreign number in onboarding -> hint, no SMS");
+  btnWith(w, "شماره‌ی ایرانی ندارم").click(); await sleep(200);
+  ok(!w.document.getElementById("ob_phone") && !!btnWith(w, "نه، شماره‌ی ایرانی دارم"), "B4 skip hides phone field, offers undo");
+  btnWith(w, "نه، شماره‌ی ایرانی دارم").click(); await sleep(200);
+  ok(!!w.document.getElementById("ob_phone"), "B5 undo brings phone field back");
+  btnWith(w, "شماره‌ی ایرانی ندارم").click(); await sleep(200);
+  w.document.getElementById("ob_name").value = "تست خارج";
+  n = w.__mock.calls.length;
+  w.document.getElementById("btn_ob_submit").click(); await sleep(2500);
+  const p = w.__mock.profile;
+  ok(!w.needsOnboarding() && !!w.document.querySelector(".qs-grid"), "B6 passes onboarding -> Quick Start");
+  ok(p.name === "تست خارج" && p.phone === null && p.phone_verified === false, "B7 name saved, phone columns untouched");
+  ok(p.data && p.data.phoneSkip && p.data.phoneSkip.abroad === true, "B8 DATA.phoneSkip saved");
+  ok(invokes(w, n).some(c => c.invoke === "grant-welcome-premium"), "B9 welcome premium still granted");
+
+  // C. Google user who already skipped (reload / second device)
+  w = await load("google_skipped");
+  ok(!w.needsOnboarding() && !w.document.getElementById("ob_name") && w.document.getElementById("tabbar").children.length > 0, "C1 goes straight into the app");
+  w.switchTab("settings"); await sleep(400);
+  ev(w,"editingPhone = true"); w.renderAll(); await sleep(200);
+  w.document.getElementById("settings_phone_input").value = "+44 7700 900123";
+  n = w.__mock.calls.length; await w.sendSettingsPhoneOtp();
+  ok(ev(w,"settingsPhoneError").includes("فقط به شماره‌های ایران") && invokes(w, n).length === 0, "C2 settings: foreign number -> message, no SMS");
+  ev(w,"editingPhone = true"); w.renderAll(); await sleep(200);
+  try{ w.localStorage.removeItem("otpCooldown_settings_phone"); }catch(e){}
+  w.document.getElementById("settings_phone_input").value = "09121234567";
+  n = w.__mock.calls.length; await w.sendSettingsPhoneOtp();
+  ok(invokes(w, n).some(c => c.invoke === "send-otp" && c.body.mobile === "09121234567"), "C3 settings: Iranian number still sends (unchanged)");
+
+  // D. phone-signup account (regression) — must never be offered the skip
+  w = await load("phone_new");
+  ok(!w.isPhoneOptionalAccount() && !!w.document.getElementById("qs_name") && !btnWith(w, "شماره‌ی ایرانی ندارم"), "D1 phone account: Quick Start with name, no skip (unchanged)");
+  ev(w,"DATA.phoneSkip = { abroad: true }; profileMeta.phone = \"\";");
+  ok(w.needsOnboarding() === true, "D2 tampered phoneSkip ignored for phone accounts");
+
+  // E. old email account
+  w = await load("email_old");
+  ok(w.needsOnboarding() && !!btnWith(w, "شماره‌ی ایرانی ندارم"), "E1 email account gets the skip option");
+  w.document.getElementById("ob_name").value = "X"; w.document.getElementById("btn_ob_submit").click(); await sleep(300);
+  ok(w.needsOnboarding() && w.document.getElementById("ob_error").textContent.length > 0, "E2 without skip, phone still required");
+
+  // F. service worker cache
+  await sleep(1500);
+  const keys = await caches.keys();
+  ok(keys.includes("peleh-v25") && !keys.includes("peleh-v24"), "F1 SW cache is peleh-v25 (" + keys.join(",") + ")");
+
+  // G. no network outside localhost
+  const hosts = new Set();
+  [window, f.contentWindow].forEach(x => x.performance.getEntriesByType("resource").forEach(e => hosts.add(new URL(e.name).host)));
+  ok([...hosts].every(h => h === location.host), "G1 all requests stayed on " + location.host + " (" + [...hosts].join(",") + ")");
+
+  const fails = out.filter(x => x.startsWith("FAIL")).length;
+  document.getElementById("out").textContent = out.join("\n") + "\nTOTAL " + out.length + " FAIL " + fails;
+  window.__done = { total: out.length, fails };
+})().catch(e => { document.getElementById("out").textContent = out.join("\n") + "\nERROR " + e.message; window.__done = { error: e.message }; });
+</script>
+</body></html>

@@ -1,0 +1,164 @@
+--- live/app.js
++++ live-patched/app.js
+@@ -362,6 +362,26 @@
+   else if(/^9\d{9}$/.test(s)) s = "0" + s;
+   return /^09\d{9}$/.test(s) ? s : null;
+ }
++/* sms-fix 2026-10-26: پیامک پله (MrOTP) فقط به شماره‌های ایران می‌رسه. شماره‌ی خارجی (+1… / 0044… و
++   هر پیش‌شماره‌ای غیر از ۹۸) رو تشخیص می‌دیم تا به‌جای «شماره معتبر نیست»، راه درست (ورود با گوگل) رو نشون بدیم. */
++const INTL_PHONE_MSG = "پیامک پله فعلاً فقط به شماره‌های ایران می‌رسه. اگه خارج از ایرانی، «ادامه با گوگل» رو بزن — شماره لازم نیست.";
++function looksInternationalPhone(raw){
++  const s = faToEnDigits(String(raw || "")).replace(/[\s\-().‌‎‏]/g, "");
++  if(normalizeIranMobile(s)) return false;
++  const m = /^(?:\+|00)(\d{7,15})$/.exec(s);
++  return !!m && !m[1].startsWith("98");
++}
++function phoneErrorFor(raw){ return looksInternationalPhone(raw) ? INTL_PHONE_MSG : PHONE_INVALID_MSG; }
++// حساب‌هایی که ایمیل واقعی دارن (گوگل، یا ایمیل قدیمی) می‌تونن بدون شماره‌ی ایرانی وارد اپ بشن.
++// حساب موبایلی (ایمیل فنی @phone.pelehapp.ir) همیشه شماره‌ی تأییدشده داره، پس این گزینه رو نمی‌بینه.
++const PHONE_SHADOW_DOMAIN = "@phone.pelehapp.ir";
++function isPhoneOptionalAccount(){
++  const e = String((currentUser && currentUser.email) || "").toLowerCase();
++  return !!e && !e.endsWith(PHONE_SHADOW_DOMAIN);
++}
++function phoneSkipped(){
++  return isPhoneOptionalAccount() && !!(DATA && DATA.phoneSkip && DATA.phoneSkip.abroad);
++}
+ function onlyDigits(raw){ return faToEnDigits(String(raw || "")).replace(/\D/g, ""); }
+ function normalizeEmail(raw){ return String(raw || "").trim().toLowerCase(); }
+ function looksLikeEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
+@@ -462,7 +482,8 @@
+   // اسم رو داشتن دیگه کافی نیست — شماره موبایل هم باید معتبر باشه، وگرنه (چه کاربر تازه، چه
+   // یکی از قبل که این فیلد هنوز اجباری نبود) دوباره برمی‌گرده به همین صفحه تا واردش کنه.
+   const meta = currentProfileMeta();
+-  return !!currentUser && !loadError && (!meta.name || !/^09\d{9}$/.test(meta.phone||""));
++  // sms-fix: کاربر گوگلی/ایمیلی که «خارج از ایرانم» رو زده، شماره نمی‌خواد
++  return !!currentUser && !loadError && (!meta.name || (!/^09\d{9}$/.test(meta.phone||"") && !phoneSkipped()));
+ }
+ function needsWorkProfile(){
+   // فاز A۲/A۳: پروفایل کاری دیگه یه مرحله‌ی اجباری نیست — علایق از «شروع سریع» استنتاج می‌شن و ساعت
+@@ -940,7 +961,7 @@
+   const phone = normalizeIranMobile(raw);
+   lastAuthPhone = phone || raw.trim();
+   authError = "";
+-  if(!phone){ authError = PHONE_INVALID_MSG; renderAll(); return; }
++  if(!phone){ authError = phoneErrorFor(raw); renderAll(); return; }
+   lockButton('btn_signup_phone_step', 'در حال ارسال...');
+   try{
+     const { data, error } = await invokeEdge('send-otp', { body: { mobile: phone } });
+@@ -1007,7 +1028,7 @@
+   const phone = normalizeIranMobile(raw);
+   lastAuthPhone = phone || raw.trim();
+   authError = "";
+-  if(!phone){ authError = PHONE_INVALID_MSG; renderAll(); return; }
++  if(!phone){ authError = phoneErrorFor(raw); renderAll(); return; }
+   lockButton('btn_signin_phone_step', 'در حال ارسال...');
+   try{
+     const { data, error } = await invokeEdge('send-otp', { body: { mobile: phone } });
+@@ -1301,6 +1322,7 @@
+           ${phoneInput('auth_phone', 'submitSignupPhoneStep')}
+         </div>
+         <div class="note" style="margin-top:-4px;">اگه قبلاً حساب داشتی وارد می‌شی؛ اگه نه، همین‌جا حسابت ساخته می‌شه.</div>
++        ${(EMAIL_AUTH_ENABLED || authError === INTL_PHONE_MSG) ? '' : `<div class="note" style="margin-top:4px;">خارج از ایرانی؟ پیامک فقط به شماره‌ی ایران می‌رسه — پایین «ادامه با گوگل» رو بزن.</div>`}
+         ${errHtml}
+         <button class="btn btn-primary" id="btn_signup_phone_step" data-otp-family="signup_phone" style="width:100%; padding:15px; margin-top:10px;" onclick="submitSignupPhoneStep()">${EMAIL_AUTH_ENABLED ? 'فرستادن کد تأیید' : 'ادامه'}</button>
+         ${EMAIL_AUTH_ENABLED ? '' : `<div class="auth-or"><span></span>یا<span></span></div>${googleBtn.replace("ورود با گوگل", "ادامه با گوگل")}`}
+@@ -2799,6 +2821,13 @@
+ let obPhoneVerified = null; // null = not yet initialized for this session
+ let obPhoneOtpSent = false;
+ let obVerifyBusy = false;
++let obSkipPhone = false; // sms-fix: کاربر گوگلی/ایمیلی «شماره‌ی ایرانی ندارم» رو زده
++function setObSkipPhone(on){
++  obSkipPhone = !!on && isPhoneOptionalAccount();
++  const errEl = document.getElementById('ob_phone_error');
++  if(errEl) errEl.textContent = "";
++  renderAll();
++}
+ let obPendingPhone = ""; // شماره‌ای که همین الان کاربر تایپ کرده و کد براش فرستاده شده — چون
+ // meta.phone (پروفایل ذخیره‌شده) برای کاربری که اولین‌باره شماره می‌زنه هنوز خالیه، و
+ // renderAll() بعد از ارسال کد، اینپوت رو دوباره از meta.phone پر می‌کنه (یعنی خالی می‌کنه)
+@@ -2817,7 +2846,9 @@
+   const errEl = document.getElementById('ob_phone_error');
+   if(errEl) errEl.textContent = "";
+   if(!phone){
+-    if(errEl) errEl.textContent = PHONE_INVALID_MSG;
++    if(errEl) errEl.textContent = isPhoneOptionalAccount() && looksInternationalPhone(document.getElementById('ob_phone').value)
++      ? "پیامک پله فعلاً فقط به شماره‌های ایران می‌رسه. اگه خارج از ایرانی، «شماره‌ی ایرانی ندارم» رو بزن."
++      : PHONE_INVALID_MSG;
+     return;
+   }
+   const btn = document.getElementById('ob_phone_verify_btn');
+@@ -2887,7 +2918,14 @@
+   } else if(obPhoneVerified === null){
+     obPhoneVerified = !!(meta.phoneVerified && meta.phone);
+   }
+-  const phoneBlock = obPhoneVerified ? `` : `
++  // sms-fix: حساب گوگلی/ایمیلی می‌تونه بدون شماره‌ی ایرانی ادامه بده (کاربرهای خارج از ایران)
++  const canSkip = !obPhoneVerified && isPhoneOptionalAccount();
++  const skipBlock = `
++      <div class="card" style="margin-bottom:12px;">
++        <div class="note">بدون شماره ادامه می‌دی. هر وقت شماره‌ی ایرانی داشتی، از تنظیمات اضافه‌اش کن.</div>
++        <button type="button" style="color:var(--gold); text-decoration:underline; margin-top:6px;" onclick="setObSkipPhone(false)">نه، شماره‌ی ایرانی دارم</button>
++      </div>`;
++  const phoneBlock = obPhoneVerified ? `` : (canSkip && obSkipPhone) ? skipBlock : `
+       <div class="field">
+         <label>شماره موبایل</label>
+         <div style="display:flex; gap:8px; align-items:flex-start;">
+@@ -2903,6 +2941,7 @@
+             </div>
+             <div class="note" style="margin-top:4px;">کد نیومد؟ <button id="ob_phone_resend_link" data-otp-family="ob_phone" style="color:var(--gold); text-decoration:underline;" onclick="sendObPhoneOtp()">دوباره بفرست</button></div>
+           </div>` : `<div class="note" style="margin-top:4px;">قبل از ادامه، باید شماره‌ت رو با یه کد پیامکی تایید کنی.</div>`}
++        ${canSkip ? `<div class="note" style="margin-top:6px;">خارج از ایرانی؟ <button type="button" style="color:var(--gold); text-decoration:underline;" onclick="setObSkipPhone(true)">شماره‌ی ایرانی ندارم</button></div>` : ``}
+       </div>`;
+   app.innerHTML = `
+     <div class="onboard-wrap">
+@@ -3013,8 +3052,12 @@
+   const phone = obPendingPhone || normalizeIranMobile((document.getElementById("ob_phone") || {}).value) || meta0.phone || "";
+   const errEl = document.getElementById("ob_error");
+   if(!name){ errEl.textContent = "یه اسم بنویس تا صدات کنیم 🙂"; return; }
+-  if(!/^09\d{9}$/.test(phone)){ errEl.textContent = PHONE_INVALID_MSG; return; }
+-  if(!obPhoneVerified){ errEl.textContent = "قبل از ادامه، شماره موبایلت رو تایید کن."; return; }
++  // sms-fix: کاربر خارج از ایران (فقط حساب گوگلی/ایمیلی) بدون شماره ادامه می‌ده؛ شماره‌ی پروفایل دست نمی‌خوره
++  const skipPhone = obSkipPhone && isPhoneOptionalAccount() && !obPhoneVerified;
++  if(!skipPhone){
++    if(!/^09\d{9}$/.test(phone)){ errEl.textContent = PHONE_INVALID_MSG; return; }
++    if(!obPhoneVerified){ errEl.textContent = "قبل از ادامه، شماره موبایلت رو تایید کن."; return; }
++  }
+   errEl.textContent = "";
+   onboardingSubmitting = true;
+   const btn = document.getElementById("btn_ob_submit");
+@@ -3023,11 +3066,16 @@
+   const prevWork = DATA.workProfile;
+   DATA.workProfile = Object.assign({employment:null, workStart:"", workEnd:"", interests:[], interestsCustom:""}, prevWork || {}, {completed: true});
+   const prevMeta = Object.assign({}, profileMeta);
+-  const ok = await saveProfileInfo({name, birthdate, phone, phoneVerified: true});
++  const prevSkip = DATA.phoneSkip;
++  if(skipPhone) DATA.phoneSkip = { abroad: true, at: new Date().toISOString() };
++  const ok = skipPhone
++    ? await saveProfileInfo({name, birthdate})
++    : await saveProfileInfo({name, birthdate, phone, phoneVerified: true});
+   onboardingSubmitting = false;
+   if(!ok){
+     profileMeta = prevMeta;
+     DATA.workProfile = prevWork;
++    DATA.phoneSkip = prevSkip;
+     if(btn){ btn.disabled = false; btn.textContent = "شروع کن 🚀"; }
+     const e2 = document.getElementById("ob_error");
+     if(e2) e2.textContent = "ذخیره نشد — اینترنتت رو چک کن و دوباره «شروع کن» رو بزن.";
+@@ -4480,7 +4528,7 @@
+   settingsPhoneDraft = rawPhone.trim();
+   const phone = normalizeIranMobile(rawPhone);
+   settingsPhoneError = "";
+-  if(!phone){ settingsPhoneError = PHONE_INVALID_MSG; renderAll(); return; }
++  if(!phone){ settingsPhoneError = looksInternationalPhone(rawPhone) ? "پیامک پله فعلاً فقط به شماره‌های ایران می‌رسه؛ شماره‌ی خارجی رو نمی‌شه تأیید کرد." : PHONE_INVALID_MSG; renderAll(); return; }
+   if(phone === profileMeta.phone && profileMeta.phoneVerified){ settingsPhoneError = "این همون شماره‌ی فعلیته."; renderAll(); return; }
+   lockButton('btn_settings_phone_verify', 'در حال ارسال...');
+   try{
+--- live/sw.js
++++ live-patched/sw.js
+@@ -1,4 +1,4 @@
+-const CACHE_NAME = "peleh-v24"; // v24: پیام همگانی ادمین (بنر داخل اپ) — v23: رفع خطای داشبورد ادمین (تابع fa سراسری شد) — v22: فعال شدن سوییچ خودکار به سرور ایران (کلید anon سرور ایران در peleh-failover-config.js) — v21: رفع فاصله‌ی چپ و راست عکس پروفایل در نوار بالا (padding پیش‌فرض دکمه) — v20 (2.4.0): رفع حفره‌های امنیتی، به‌روز شدن لحظه‌ای مربی↔ورزشکار (peleh-live.js)، BMI، عکس پیشرفت، قالب مربی — v19: سوییچ خودکار به سرور ایران (peleh-failover.js) — // v18: انتخاب چیپ عادت = پر کردن فرم (روز/امتیاز قبل از ذخیره) — v17: گزارش منبع نصب (reportClientSource) — v15: ادغام مدیریت عادت‌ها + حرکت اختصاصی فوری مربی
++const CACHE_NAME = "peleh-v25"; // v25: کاربر خارج از ایران — پیام روشن برای شماره‌ی خارجی و ادامه‌ی بدون شماره برای حساب گوگلی (sms-fix) — v24: پیام همگانی ادمین (بنر داخل اپ) — v23: رفع خطای داشبورد ادمین (تابع fa سراسری شد) — v22: فعال شدن سوییچ خودکار به سرور ایران (کلید anon سرور ایران در peleh-failover-config.js) — v21: رفع فاصله‌ی چپ و راست عکس پروفایل در نوار بالا (padding پیش‌فرض دکمه) — v20 (2.4.0): رفع حفره‌های امنیتی، به‌روز شدن لحظه‌ای مربی↔ورزشکار (peleh-live.js)، BMI، عکس پیشرفت، قالب مربی — v19: سوییچ خودکار به سرور ایران (peleh-failover.js) — // v18: انتخاب چیپ عادت = پر کردن فرم (روز/امتیاز قبل از ذخیره) — v17: گزارش منبع نصب (reportClientSource) — v15: ادغام مدیریت عادت‌ها + حرکت اختصاصی فوری مربی
+ // health.js قبلاً تو این لیست نبود، پس تو حالت آفلاین تب «سلامت» خراب می‌شد
+ // v10: plus.js اضافه شد. exercise-bank.json عمداً تو shell نیست (فقط کاربرهای سلامت پلاس لازمش دارن)؛
+ // اولین بار که گرفته بشه، همین Service Worker کشش می‌کنه و بعد آفلاین هم در دسترسه.

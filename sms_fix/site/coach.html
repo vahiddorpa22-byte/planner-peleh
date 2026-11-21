@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<!-- v2.4.0 (ممیزی S8): CSP — اسکریپت فقط از خود سایت و CDN پشتیبان supabase-js؛ اتصال فقط به Supabase و سرور پشتیبان -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.supabase.co https://api.pelehapp.ir; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.pelehapp.ir wss://api.pelehapp.ir; media-src 'self' blob: https://*.supabase.co; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101C36">
+<meta name="robots" content="noindex">
+<title>پله — پنل مربی</title>
+<link rel="icon" href="icon-180.png">
+<script src="supabase.js"></script>
+<script>window.supabase || window.Capacitor || document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"><\/script>');</script>
+<script src="peleh-failover-config.js"></script>
+<script src="peleh-failover.js"></script>
+<script src="peleh-live.js"></script>
+<style>
+@font-face{ font-family:'Vazirmatn'; src:url('fonts/Vazirmatn-Variable.woff2') format('woff2'); font-weight:100 900; font-style:normal; font-display:swap; }
+</style>
+<link rel="stylesheet" href="peleh-theme.css">
+<link rel="stylesheet" href="coach.css">
+<script src="peleh-ui.js"></script>
+<script>pelehApplyStoredTheme();</script>
+</head>
+<body>
+<div id="root" class="c-root"><div class="c-loading">در حال بارگذاری...</div></div>
+<div id="c_sheet_wrap" class="c-sheet-wrap" onclick="if(event.target===this) cCloseSheet()"><div id="c_sheet" class="c-sheet" role="dialog" aria-modal="true"></div></div>
+<div id="c_toast" class="c-toast" role="status" aria-live="polite"></div>
+<script src="peleh-keys.js"></script>
+<script src="exercise-search.js"></script>
+<script src="coach.js"></script>
+<script src="coach-plus.js"></script>
+</body>
+</html>

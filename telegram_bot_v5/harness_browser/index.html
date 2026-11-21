@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fa"><head><meta charset="utf-8"><title>bot v5 tests</title>
+<style>body{font:14px/1.6 monospace;background:#111;color:#ddd;padding:12px;direction:ltr}.ok{color:#7c7}.bad{color:#f66}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/5.4.5/typescript.min.js"></script>
+</head><body><h3>pelehbot v5 — browser harness (LOCAL TEST ONLY)</h3><pre id="out"></pre>
+<script type="module">
+const out = document.getElementById("out");
+const log = (s, cls) => { const sp = document.createElement("span"); if (cls) sp.className = cls; sp.textContent = s + "\n"; out.appendChild(sp); };
+window.__log = log;
+async function tsModule(path, rewrite) {
+  let src = await (await fetch(path + "?nc=" + Math.random())).text();
+  for (const [a, b] of rewrite) src = src.split(a).join(b);
+  const js = ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 }, reportDiagnostics: true });
+  if (js.diagnostics && js.diagnostics.length) log("DIAG " + path + ": " + js.diagnostics.map(d => ts.flattenDiagnosticMessageText(d.messageText, "\n")).join(" | "), "bad");
+  return URL.createObjectURL(new Blob([js.outputText], { type: "text/javascript" }));
+}
+try {
+  const mock = await tsModule("mock_sb.ts", []);
+  const lib = await tsModule("../lib.ts", []);
+  const fb = await tsModule("../temp_fallback.ts", []);
+  const idx = await tsModule("../index.ts", [["npm:@supabase/supabase-js@2", mock], ["./lib.ts", lib], ["./temp_fallback.ts", fb]]);
+  window.__urls = { mock, lib, idx };
+  const t = document.createElement("script"); t.type = "module"; t.src = "tests.js?nc=" + Math.random(); document.body.appendChild(t);
+} catch (e) { log("LOAD FAIL " + e.message, "bad"); }
+</script></body></html>
