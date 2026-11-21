@@ -1,0 +1,105 @@
+/* ===================== پله — استایل نسخه‌ی بتا (batch 2026-11-03) =====================
+   همه‌ی قاعده‌ها زیر html.peleh-beta‌ان؛ این کلاس فقط برای حساب‌های بتا اضافه می‌شه، پس برای بقیه
+   هیچ قاعده‌ای از این فایل اعمال نمی‌شه. رنگ‌ها فقط از توکن‌های تم (peleh-theme.css). */
+
+/* ---- E: متن بلند «کارهای امروز» ---- */
+html.peleh-beta .task-main{ flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:flex-start; }
+html.peleh-beta .task-main .task-text{ width:100%; flex:none; }
+html.peleh-beta .task-text{ overflow-wrap:anywhere; word-break:normal; line-height:1.7; }
+html.peleh-beta .task-text.clamp{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; line-clamp:3; overflow:hidden; }
+html.peleh-beta .task-more{ background:none; border:0; padding:2px 0; margin-top:2px; font:inherit; font-size:var(--fs-12); font-weight:700; color:var(--gold); cursor:pointer; min-height:28px; }
+html.peleh-beta .task-row.long{ align-items:flex-start; }
+html.peleh-beta .task-row.long .task-check{ margin-top:2px; }
+@media (max-width:640px){
+  html.peleh-beta .task-row.long{ flex-wrap:wrap; row-gap:2px; padding-top:10px; padding-bottom:6px; }
+  html.peleh-beta .task-row.long .task-tools{ flex-basis:100%; justify-content:flex-end; }
+}
+@media (min-width:641px){
+  html.peleh-beta .task-text.clamp{ display:block; -webkit-line-clamp:unset; line-clamp:none; overflow:visible; }
+  html.peleh-beta .task-more{ display:none; }
+}
+
+/* ---- لَم: لایه‌ها روی هم با offset صفر ---- */
+html.peleh-beta .lam-fig{ position:relative; width:128px; height:128px; flex:none; margin:0 auto; }
+html.peleh-beta .lam-fig img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; }
+html.peleh-beta .lam-fig .lam-blink{ opacity:0; animation:pb-blink 5.2s infinite; }
+@keyframes pb-blink{ 0%, 93%, 100%{ opacity:0; } 95%, 97%{ opacity:1; } }
+@media (prefers-reduced-motion: reduce){ html.peleh-beta .lam-fig .lam-blink{ animation:none; } }
+html.peleh-beta .pb-lam-say{ background:var(--gold-faint); border:1px solid var(--gold-line); border-radius:var(--r-md, 14px); padding:10px 12px; font-size:var(--fs-14); line-height:1.9; color:var(--text); text-align:start; max-width:380px; }
+html.peleh-beta .pb-lam-name{ font-weight:800; color:var(--gold); }
+html.peleh-beta .pb-lam-hero{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+html.peleh-beta .pb-sheet{ text-align:start; }
+html.peleh-beta .pb-level{ display:flex; gap:10px; align-items:center; padding:10px; border:1px solid var(--border); border-radius:var(--r-md, 14px); margin-bottom:8px; background:var(--surface); }
+html.peleh-beta .pb-level.got{ border-color:var(--gold-line); background:var(--gold-faint); }
+html.peleh-beta .pb-level-ic{ width:30px; height:30px; border-radius:50%; display:grid; place-items:center; font-weight:800; background:var(--track); color:var(--muted); flex:none; }
+html.peleh-beta .pb-level.got .pb-level-ic{ background:var(--gold); color:var(--on-gold); }
+html.peleh-beta .pb-level-t{ font-weight:800; font-size:var(--fs-14); }
+html.peleh-beta .pb-acc.off img{ opacity:.35; filter:grayscale(1); }
+html.peleh-beta .pb-bar{ height:6px; border-radius:6px; background:var(--track); overflow:hidden; margin:6px 0 2px; }
+html.peleh-beta .pb-bar i{ display:block; height:100%; background:var(--gold); border-radius:6px; }
+html.peleh-beta .pb-sport-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:8px 0; }
+html.peleh-beta .pb-sport{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; border-radius:var(--r-md, 14px); border:1px solid var(--border); background:var(--surface); color:var(--text); font:inherit; font-size:var(--fs-12); cursor:pointer; min-height:84px; }
+html.peleh-beta .pb-crop{ position:relative; width:64px; height:64px; overflow:hidden; border-radius:12px; background:var(--gold-faint); display:block; flex:none; }
+html.peleh-beta .pb-crop .lam-fig{ margin:0; max-width:none; }
+html.peleh-beta .pb-sport.on{ border-color:var(--gold); background:var(--gold-soft); font-weight:800; }
+html.peleh-beta .pb-sport-none{ width:48px; height:48px; display:grid; place-items:center; color:var(--faint); font-size:20px; }
+html.peleh-beta .pb-ob-anim{ display:block; width:190px; height:190px; object-fit:contain; margin:0 auto; }
+html.peleh-beta .pb-pop{ animation:pb-pop .5s ease-out both; }
+@keyframes pb-pop{ from{ transform:scale(.85) translateY(10px); opacity:0; } to{ transform:none; opacity:1; } }
+@media (prefers-reduced-motion: reduce){ html.peleh-beta .pb-pop{ animation:none; } }
+html.peleh-beta .pb-lam-strip, html.peleh-beta .pb-demo-card, html.peleh-beta .pb-return{ display:flex; gap:12px; align-items:center; cursor:pointer; margin-bottom:12px; }
+html.peleh-beta .pb-lam-strip .lam-fig, html.peleh-beta .pb-return .lam-fig{ margin:0; }
+html.peleh-beta .pb-beta-card .pb-wide{ width:100%; padding:10px; margin-top:8px; }
+html.peleh-beta .pb-beta-card .lam-fig{ margin:0; }
+
+/* ---- A4 ---- */
+html.peleh-beta .pb-return{ cursor:default; border-color:var(--gold-line); background:var(--hero-grad); }
+html.peleh-beta .pb-return-t{ font-weight:800; font-size:var(--fs-15); margin-bottom:8px; }
+html.peleh-beta .pb-return-btn{ width:100%; padding:12px; font-size:var(--fs-15); overflow-wrap:anywhere; }
+html.peleh-beta .pb-link{ background:none; border:0; color:var(--muted); font:inherit; font-size:var(--fs-12); padding:6px 0 0; cursor:pointer; text-decoration:underline; text-underline-offset:3px; min-height:30px; }
+
+/* ---- A2 آنبوردینگ ---- */
+html.peleh-beta .pb-ob{ text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px; padding-top:34px; }
+html.peleh-beta .pb-ob .qs-title, html.peleh-beta .pb-ob .qs-sub{ text-align:center; }
+html.peleh-beta .pb-ob .card{ width:100%; text-align:start; }
+html.peleh-beta .pb-ob .section-title{ width:100%; }
+html.peleh-beta .pb-ob-btn{ width:100%; padding:14px; }
+html.peleh-beta .pb-dots{ display:flex; gap:6px; justify-content:center; }
+html.peleh-beta .pb-dots i{ width:22px; height:5px; border-radius:4px; background:var(--track); display:block; }
+html.peleh-beta .pb-dots i.on{ background:var(--gold); }
+html.peleh-beta .pb-first-grid{ display:grid; grid-template-columns:1fr; gap:10px; width:100%; }
+html.peleh-beta .pb-first{ display:flex; align-items:center; justify-content:center; gap:10px; min-height:58px; width:100%; border-radius:var(--r-md, 14px); border:1px solid var(--gold-line); background:var(--surface); color:var(--text); font:inherit; font-size:var(--fs-16); font-weight:800; cursor:pointer; }
+html.peleh-beta .pb-first:active{ background:var(--gold-soft); }
+html.peleh-beta .pb-first-ic{ font-size:22px; }
+html.peleh-beta .pb-first.pb-later{ border-color:var(--border); font-weight:700; color:var(--muted); }
+html.peleh-beta .pb-done-tick{ font-weight:800; color:var(--ok); font-size:var(--fs-16); }
+html.peleh-beta .pb-preview-banner{ position:sticky; top:0; z-index:5; background:var(--gold); color:var(--on-gold); font-weight:800; font-size:var(--fs-13); padding:8px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+html.peleh-beta .pb-preview-banner button{ background:var(--on-gold); color:var(--gold); border:0; border-radius:999px; padding:4px 12px; font:inherit; font-weight:800; cursor:pointer; }
+
+/* ---- G: نمایش حرکت (۲ فریم) ---- */
+html.peleh-beta .pb-demo{ position:relative; width:100%; aspect-ratio:4 / 3; border-radius:var(--r-md, 14px); overflow:hidden; background:#fff; flex:none; }
+html.peleh-beta .pb-demo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+html.peleh-beta .pb-demo .f2{ animation:pb-frames 1.8s steps(1, end) infinite; }
+@keyframes pb-frames{ 0%{ opacity:0; } 50%{ opacity:1; } 100%{ opacity:0; } }
+html.peleh-beta .pb-demo.still .f2{ animation:none; opacity:0; }
+html.peleh-beta .pb-demo.sm{ width:84px; }
+html.peleh-beta .pb-demo-card .pb-demo.sm{ width:72px; }
+@media (prefers-reduced-motion: reduce){
+  html.peleh-beta .pb-demo.lg{ aspect-ratio:auto; display:flex; background:#fff; }
+  html.peleh-beta .pb-demo.lg img{ position:static; width:50%; height:auto; }
+  html.peleh-beta .pb-demo .f2{ animation:none; }
+  html.peleh-beta .pb-demo:not(.lg) .f2{ opacity:0; }
+}
+html.peleh-beta .pb-cues{ list-style-type:persian; margin:12px 0 8px; padding-inline-start:22px; line-height:1.9; font-size:var(--fs-14); }
+html.peleh-beta .pb-safety{ font-size:var(--fs-13); color:var(--warn); background:var(--warn-soft); border-radius:10px; padding:8px 10px; line-height:1.8; }
+html.peleh-beta .pb-demo-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; }
+html.peleh-beta .pb-demo-item{ display:flex; flex-direction:column; gap:6px; align-items:stretch; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md, 14px); padding:6px; color:var(--text); font:inherit; font-size:var(--fs-12); font-weight:700; cursor:pointer; }
+html.peleh-beta .pb-demo-item .pb-demo.sm{ width:100%; }
+html.peleh-beta .pb-demo-inline{ display:inline-flex; align-items:center; gap:6px; margin:4px 0 6px; background:var(--gold-faint); border:1px solid var(--gold-line); color:var(--gold); border-radius:999px; padding:6px 12px; font:inherit; font-size:var(--fs-12); font-weight:800; cursor:pointer; min-height:34px; }
+
+/* ---- C: BMI ---- */
+html.peleh-beta .pb-bmi-step{ margin-top:8px; padding:8px 10px; border-radius:10px; background:var(--gold-faint); font-size:var(--fs-13); line-height:1.8; }
+html.peleh-beta .pb-bmi-figs{ display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin:10px 0 4px; }
+html.peleh-beta .pb-bmi-figs > div{ color:var(--faint); border-radius:10px; padding:4px 0; text-align:center; }
+html.peleh-beta .pb-bmi-figs > div.on{ color:var(--text); background:var(--surface); outline:1px solid var(--gold-line); }
+html.peleh-beta .pb-bmi-fig{ width:100%; max-width:70px; height:auto; }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>پله — پلنر امتیازی</title>
+
+<!-- iOS "Add to Home Screen" support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="پله">
+<meta name="theme-color" content="#1b2a4a">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+
+<!-- Supabase client (cloud sync + accounts).
+     فایل محلی با نسخه‌ی ثابت (2.117.1) — قبلاً از unpkg.com و بدون نسخه‌ی ثابت (@2) لود می‌شد؛ اگه
+     unpkg کند/فیلتر بود کل ورود از کار می‌افتاد، و هر نسخه‌ی جدید Supabase بدون تست مستقیم روی اپ
+     می‌نشست. CDN فقط به‌عنوان پشتیبان، اگه فایل محلی به هر دلیلی لود نشد. -->
+<script src="supabase.js"></script>
+<script>window.supabase || window.Capacitor || document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"><\/script>');</script>
+<script src="peleh-failover-config.js"></script>
+<script src="peleh-failover.js"></script>
+<script src="peleh-live.js"></script>
+<!-- تنظیم مسیر پرداخت نسخه‌ی اندروید (بازار / زیبال) — توضیح داخل خود فایل -->
+<script src="store-config.js"></script>
+
+<!-- فونت محلی (قبلاً از Google Fonts لود می‌شد که تو ایران گاهی کند/بسته‌ست و جلوی نمایش صفحه رو می‌گرفت) -->
+<link rel="preload" href="fonts/Vazirmatn-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{
+  font-family:'Vazirmatn';
+  src:url('fonts/Vazirmatn-Variable.woff2') format('woff2');
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
+}
+</style>
+
+<!-- طراحی جدید: توکن‌های ۱۶ تم (منبع واحد) + کامپوننت‌ها -->
+<link rel="stylesheet" href="peleh-theme.css">
+<link rel="stylesheet" href="peleh-app.css">
+<!-- نسخه‌ی بتا (batch 2026-11-03): فقط زیر html.peleh-beta اعمال می‌شه -->
+<link rel="stylesheet" href="peleh-beta.css">
+<!-- آیکون‌های خطی یکدست + خوندن توکن‌های تم؛ قبل از app.js لازمه -->
+<script src="peleh-ui.js"></script>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<div class="tabbar" id="tabbar"></div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script src="peleh-keys.js"></script>
+<script src="peleh-beta-gate.js"></script>
+<script src="app.js"></script>
+<script src="books.js"></script>
+<script src="health-catalog.js"></script>
+<script src="health.js"></script>
+<script src="native-notify.js"></script>
+<script src="exercise-search.js"></script>
+<script src="plus.js"></script>
+<script src="plus-workout.js"></script>
+<!-- نسخه‌ی بتا: برای حساب‌های غیربتا هیچ کاری نمی‌کنه -->
+<script src="peleh-beta.js"></script>
+</body>
+</html>
