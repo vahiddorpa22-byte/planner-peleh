@@ -1,0 +1,997 @@
+--- live/admin.js
++++ patched/admin.js
+@@ -922,2 +922,6 @@
+         <div class="drawer-section">
++          <button class="row-btn" style="width:100%; padding:11px;" onclick="messageUser('${safeId(u.id)}')">💬 پیام</button>
++          <div class="note" style="color:var(--muted); font-size:12px; margin-top:6px;">پیام تو بخش «پشتیبانی» اپِ کاربر با نشان خوانده‌نشده نشون داده می‌شه — حتی اگه تا حالا پیامی نداده باشه.</div>
++        </div>
++        <div class="drawer-section">
+           <div class="drawer-label">ایمیل</div>
+@@ -1235,2 +1239,9 @@
+ function closeThread(){ openThreadUserId = null; render(); }
++// batch 2026-11-08: پیام دادن به هر کاربری از کشوی جزئیات کاربر — حتی اگه تا حالا مکالمه‌ای نداشته
++// (همون جدول support_messages با sender='admin'؛ RLS «admins can insert admin messages» اجازه می‌ده)
++async function messageUser(userId){
++  openDrawerUserId = null;
++  await openThread(userId);
++  setTimeout(() => { const t = document.getElementById("admin_reply_text"); if(t) t.focus(); }, 60);
++}
+ function renderMsgDrawer(){
+@@ -1245,7 +1256,7 @@
+         <div class="drawer-section">
+-          <div class="drawer-label">کاربر</div>
+-          <div class="masked-email" onclick="toggleReveal('${safeId(openThreadUserId)}')">${revealed ? escapeHtml(u?u.email:openThreadUserId) : maskEmail(u?u.email:null)}</div>
++          <div class="drawer-label">کاربر${u && u.name ? `: ${escapeHtml(u.name)}` : ``}</div>
++          <div class="masked-email" onclick="toggleReveal('${safeId(openThreadUserId)}')">${revealed ? escapeHtml(u ? (u.email || u.phone || openThreadUserId) : openThreadUserId) : (u && !u.email && u.phone ? maskPhone(u.phone) : maskEmail(u?u.email:null))}</div>
+         </div>
+         <div id="admin_chat_scroll" style="flex:1; overflow-y:auto; margin-bottom:14px; max-height:360px;">
+-          ${msgs.length===0 ? `<div class="note" style="color:var(--faint); font-size:12.5px;">هنوز پیامی نیست.</div>` :
++          ${msgs.length===0 ? `<div class="note" style="color:var(--faint); font-size:12.5px;">هنوز پیامی نیست — اولین پیام رو تو بفرست؛ کاربر تو «پشتیبانی» اپ با نشان پیام تازه می‌بینه.</div>` :
+             msgs.map(m=>`
+--- live/app.js
++++ patched/app.js
+@@ -2494,3 +2494,4 @@
+   const owner = tabOwner(currentTab);
+-  const dot = rewardReady();
++  const msgDot = typeof supportUnread !== "undefined" && supportUnread > 0;
++  const dot = rewardReady() || msgDot;
+   const bar = document.getElementById("tabbar");
+@@ -2499,3 +2500,3 @@
+   bar.innerHTML = tabs.map(t => `
+-    <button class="tabbtn ${owner===t.id?'active':''}" ${owner===t.id?'aria-current="page"':''} onclick="switchTab('${t.id}')"${t.id==='more' && dot ? ' aria-label="بیشتر — جایزه آماده‌ی دریافت"' : ''}>
++    <button class="tabbtn ${owner===t.id?'active':''}" ${owner===t.id?'aria-current="page"':''} onclick="switchTab('${t.id}')"${t.id==='more' && dot ? ` aria-label="بیشتر — ${msgDot ? "پیام تازه از پشتیبانی" : "جایزه آماده‌ی دریافت"}"` : ''}>
+       ${t.icon}<span>${t.label}</span>${t.id==='more' && dot ? `<i class="badge-dot" aria-hidden="true"></i>` : ``}
+@@ -2588,2 +2589,7 @@
+       </button>
++      ${supportUnread > 0 ? `<button type="button" class="more-row" onclick="openSupportChat()">
++        <span class="mr-ic">${pi("bell")}<i class="badge-dot" aria-hidden="true"></i></span>
++        <span class="mr-body"><span class="mr-title">پشتیبانی</span><span class="mr-sub" style="display:block;">${toFaDigits(supportUnread)} پیام تازه</span></span>
++        <span class="chev">${pi("chevL")}</span>
++      </button>` : ``}
+     </div>
+@@ -3668,3 +3674,3 @@
+     ? `<div class="tick-hint">${pi("pointer")} برای تیک زدن، روی مربع کنار هر عادت بزن</div>` : ``;
+-  const banners = `${renderAnnouncementBanner()}${renderUpdateBanner()}${renderWelcomeGiftBanner()}${renderPushPermissionBanner()}${renderReminderAskCard()}${typeof renderSmartNotifyBanner === "function" ? renderSmartNotifyBanner() : ""}`;
++  const banners = `${renderSupportBanner()}${renderAnnouncementBanner()}${renderUpdateBanner()}${renderWelcomeGiftBanner()}${renderPushPermissionBanner()}${renderReminderAskCard()}${typeof renderSmartNotifyBanner === "function" ? renderSmartNotifyBanner() : ""}`;
+ 
+@@ -4740,2 +4746,16 @@
+ 
++    <div class="section-title">اشتراک</div>
++    <div class="card list-card more-list">
++      <button type="button" class="more-row" onclick="switchTab('premium')">
++        <span class="mr-ic">${pi("gem")}</span>
++        <span class="mr-body"><span class="mr-title">Premium</span><span class="mr-sub" style="display:block;">پیشنهاد هوشمند، Coach، تحلیل عمیق</span></span>
++        <span class="chev">${pi("chevL")}</span>
++      </button>
++      ${CLIENT_FLAGS.plus_enabled ? `<button type="button" class="more-row" onclick="plusOpenSubscription()">
++        <span class="mr-ic">${pi("health")}</span>
++        <span class="mr-body"><span class="mr-title">اشتراک سلامت پلاس</span><span class="mr-sub" style="display:block;">${Date.now() < Date.parse("2026-11-22T00:00:00+03:30") ? "تا ۱ آذر رایگان؛ بعد اشتراک ماهانه" : "برنامه‌ی مربی، ثبت تمرین، پیشرفت"}</span></span>
++        <span class="chev">${pi("chevL")}</span>
++      </button>` : ``}
++    </div>
++
+     <div class="section-title">پشتیبانی</div>
+@@ -4743,3 +4763,3 @@
+       <div class="note" style="margin-bottom:14px;">سؤال داری یا مشکلی پیش اومده؟ باهامون چت کن، در اسرع وقت جواب می‌دیم.</div>
+-      <button class="btn btn-primary" style="width:100%; padding:12px;" onclick="openSupportChat()">چت با پشتیبانی</button>
++      <button class="btn btn-primary" style="width:100%; padding:12px;" onclick="openSupportChat()">چت با پشتیبانی${supportUnread > 0 ? ` (${toFaDigits(supportUnread)} پیام تازه)` : ``}</button>
+     </div>
+@@ -4754,3 +4774,5 @@
+   // Mark admin replies as read once the user opens the thread.
+-  sb.from('support_messages').update({read_by_user:true}).eq('user_id', currentUser.id).eq('sender','admin').eq('read_by_user', false).then(()=>{});
++  sb.from('support_messages').update({read_by_user:true}).eq('user_id', currentUser.id).eq('sender','admin').eq('read_by_user', false).then(()=>{
++    if(supportUnread){ supportUnread = 0; supportUnreadLoadedAt = Date.now(); renderAll(); }   // batch 2026-11-08: نشان پیام تازه پاک بشه
++  });
+ }
+@@ -5925,2 +5947,34 @@
+ }
++/* ===================== پیام خوانده‌نشده‌ی پشتیبانی (batch 2026-11-08) =====================
++   ادمین حالا می‌تونه از پنل به هر کاربری پیام بده (حتی بدون مکالمه‌ی قبلی). قبلاً اپ هیچ نشانی برای جواب/پیام
++   ادمین نداشت و کاربر فقط اگه خودش چت رو باز می‌کرد می‌دید. حالا: بنر بالای «امروز» + نقطه روی «بیشتر» و «تنظیمات».
++   منبع: support_messages (sender='admin' و read_by_user=false) — RLS «users can read own thread». */
++let supportUnread = 0, supportUnreadLoadedAt = 0;
++async function loadSupportUnread(force){
++  if(!sb || !currentUser) return;
++  if(!force && Date.now() - supportUnreadLoadedAt < 60 * 1000) return;
++  supportUnreadLoadedAt = Date.now();
++  try{
++    const { count, error } = await sb.from("support_messages").select("id", { count: "exact", head: true })
++      .eq("user_id", currentUser.id).eq("sender", "admin").eq("read_by_user", false);
++    if(error) return;
++    const n = count || 0;
++    if(n !== supportUnread){
++      supportUnread = n;
++      // وسط تایپ کاربر صفحه رو از نو نکش (فقط نوار پایین رو به‌روز کن)
++      const ae = document.activeElement;
++      const typing = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && document.getElementById("app") && document.getElementById("app").contains(ae);
++      if(typing){ if(typeof renderTabbar === "function") renderTabbar(); }
++      else if(typeof renderAll === "function") renderAll();
++    }
++  }catch(e){}
++}
++function renderSupportBanner(){
++  if(!supportUnread) return ``;
++  return `<div class="tip-banner" style="border-color:var(--gold-line);" role="status">
++    <span class="pi-gold" style="margin-top:3px;">${pi("bell")}</span>
++    <div class="tip-banner-text">${supportUnread > 1 ? `${toFaDigits(supportUnread)} پیام تازه` : `یه پیام تازه`} از پشتیبانی پله داری.
++      <div style="margin-top:8px;"><button class="btn btn-primary" style="padding:6px 14px; min-height:0;" onclick="openSupportChat()">دیدن پیام</button></div></div>
++  </div>`;
++}
+ function renderUpdateBanner(){
+@@ -6513,2 +6567,4 @@
+   if(typeof Notification === "undefined") return ``;
++  // batch 2026-11-08: داخل PWA نصب‌شده کارت «فعال‌سازی یادآور» (peleh-beta.js) جای این بنر رو گرفته
++  if(typeof pbPushFixBanner === "function" && typeof isBeta === "function" && isBeta() && isStandalonePWA()) return ``;
+   if(Notification.permission === "granted" || Notification.permission === "denied") return ``;
+@@ -6550,5 +6606,6 @@
+   loadAnnouncement(true);
++  loadSupportUnread(true);
+   if(presenceTimer) clearInterval(presenceTimer);
+-  presenceTimer = setInterval(() => { pingPresence(); if(document.visibilityState === "visible") loadAnnouncement(); }, 120000);
+-  document.addEventListener("visibilitychange", () => { pingPresence(); if(document.visibilityState === "visible") loadAnnouncement(); });
++  presenceTimer = setInterval(() => { pingPresence(); if(document.visibilityState === "visible"){ loadAnnouncement(); loadSupportUnread(); } }, 120000);
++  document.addEventListener("visibilitychange", () => { pingPresence(); if(document.visibilityState === "visible"){ loadAnnouncement(); loadSupportUnread(); } });
+ }
+--- live/coach-plus.js
++++ patched/coach-plus.js
+@@ -157,3 +157,3 @@
+   if(r.log_type === "time" || r.log_type === "distance_or_time") return `${fa(r.best_duration || 0)} ث`;
+-  return r.best_weight ? `${fa(r.best_weight)} کیلو` : `${fa(r.best_reps || 0)} تکرار`;
++  return r.best_weight ? `${exFaNum(r.best_weight)} کیلو` : `${fa(r.best_reps || 0)} تکرار`;
+ }
+@@ -164,11 +164,7 @@
+   (CX.family || []).forEach(r => { if(!fams[r.family] || r.week > fams[r.family].week) fams[r.family] = r; });
++  // batch 2026-11-08: جزئیات دقیقاً زیر همون حرکتی که لمس شده باز می‌شه (قبلاً بالای بخش باز می‌شد و مربی باید اسکرول می‌کرد بالا)
+   return `<div class="c-h">📈 پیشرفت <span class="c-note">(فقط ثبت‌های برنامه‌های خودت)</span></div>
+-    ${det ? `<div class="c-card gold"><div class="c-name">${esc(exName(det.exercise_id))}</div>
+-      ${det.series ? exLineChartSvg(det.series.map(p => ({ x: exFaDate(p.date), y: p.value })), { w: 340 }) : `<div class="c-note">...</div>`}
+-      <div class="c-note">${esc(exMetricLabel(det.log_type))}</div>
+-      ${det.series ? `<details><summary class="c-note" style="cursor:pointer;">جلسه‌ها (${fa(det.series.length)})</summary>${det.series.slice().reverse().map(p => `<div class="c-note">${esc(exFaDate(p.date))}: ${(p.sets || []).map(s => s.sec ? `${fa(s.sec)}ث` : `${s.weight ? fa(s.weight) + "×" : ""}${fa(s.reps || 0)}`).join("، ")}</div>`).join("")}</details>` : ``}
+-      <button class="c-link" onclick="CX.detail=null; render();">بستن</button></div>` : ``}
+-    <div class="c-card">${CX.progress.length ? CX.progress.map(r => { const st = EX_STATUS_FA[r.status] || ["", "gray"]; return `<div class="c-list-row click" onclick="cxOpenDetail('${a.athlete_id}','${r.exercise_id}','${r.log_type}')">
++    <div class="c-card">${CX.progress.length ? CX.progress.map(r => { const st = EX_STATUS_FA[r.status] || ["", "gray"]; const open = det && det.exercise_id === r.exercise_id; return `<div class="c-list-row click ${open ? "ex-row-open" : ""}" role="button" tabindex="0" aria-expanded="${open ? "true" : "false"}" onclick="cxOpenDetail('${a.athlete_id}','${r.exercise_id}','${r.log_type}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); this.click();}">
+         <div class="grow"><div class="c-name">${esc(exName(r.exercise_id))}</div><div class="c-note">بهترین ${cxBest(r)} · ${fa(r.sessions)} جلسه · آخرین ${esc(faDate(r.last_date))}</div></div>
+-        <span class="c-badge ${st[1]}">${st[0]}</span></div>`; }).join("") : `<div class="c-note">هنوز تمرینی از برنامه‌هات ثبت نشده.</div>`}
++        <span class="c-badge ${st[1]}">${st[0]}</span><span class="chev" aria-hidden="true">${open ? "▲" : "▼"}</span></div>${open ? cxDetailPanel(det) : ``}`; }).join("") : `<div class="c-note">هنوز تمرینی از برنامه‌هات ثبت نشده.</div>`}
+       <div class="c-note" style="margin-top:6px;">مقایسه‌ی ۲۸ روز اخیر با ۲۸ روز قبلش، حداقل ۳ جلسه در هر بازه. «افت احتمالی» یعنی ارزش بررسی داره، نه حکم.</div></div>
+@@ -177,6 +173,21 @@
+ }
++function cxDetailPanel(det){
++  const sess = det.sessions || (det.series ? exSessionsFromSeries(det.series) : null);
++  return `<div class="ex-det" id="cx-det">
++    ${det.series ? exLineChartSvg(det.series.map(p => ({ x: exFaDate(p.date), y: p.value })), { w: 340, label: exMetricLabel(det.log_type) }) : `<div class="c-note">در حال بارگذاری...</div>`}
++    ${det.series ? `<div class="c-note">${exMetricLabelHtml(det.log_type)}</div>` : ``}
++    ${sess ? `<div class="c-name" style="margin-top:8px;">جلسه‌ها (${fa(sess.length)})</div>${sess.length ? sess.map(s => exSessionHtml(s, det.log_type)).join("") : `<div class="c-note">ستی ثبت نشده.</div>`}
++      ${sess.length && sess[0].ordered === false ? `<div class="c-note">ترتیب ست‌ها در دسترس نبود؛ ست‌ها از بهترین به پایین مرتب شدن.</div>` : ``}` : ``}
++    <button class="c-link" onclick="event.stopPropagation(); CX.detail=null; render();">بستن</button></div>`;
++}
+ async function cxOpenDetail(athleteId, exId, logType){
+-  CX.detail = { exercise_id: exId, log_type: logType, series: null }; render();
+-  const { data } = await sb.rpc("exercise_progress", { p_athlete: athleteId, p_exercise: exId });
+-  CX.detail = { exercise_id: exId, log_type: logType, series: data || [] }; render();
++  if(CX.detail && CX.detail.exercise_id === exId){ CX.detail = null; render(); return; }   // لمس دوباره = بستن
++  CX.detail = { exercise_id: exId, log_type: logType, series: null, sessions: null }; render(); exRevealEl("cx-det");
++  const [prog, sessions] = await Promise.all([
++    sb.rpc("exercise_progress", { p_athlete: athleteId, p_exercise: exId }),
++    exLoadSessions(athleteId, exId),
++  ]);
++  if(!CX.detail || CX.detail.exercise_id !== exId) return;   // در این فاصله یه حرکت دیگه باز شده
++  CX.detail = { exercise_id: exId, log_type: logType, series: prog.data || [], sessions };
++  render(); exRevealEl("cx-det");
+ }
+--- live/exercise-search.js
++++ patched/exercise-search.js
+@@ -249 +249,124 @@
+ }
++
++/* ---------- نمایش ست‌های ثبت‌شده — مشترک ورزشکار و پنل مربی (batch 2026-11-08) ----------
++   قبلاً «۷.۵×۱۰، ۵×۱۱» نشون داده می‌شد: معلوم نبود وزنه×تکراره یا تکرار×وزنه، و تو متن راست‌به‌چپ بدتر هم می‌شد.
++   حالا هر ست یه خط جدا با واحد صریح: «ست ۱: ۱۰ تکرار × ۷٫۵ کیلو»، «۱۲ تکرار (وزن بدن)»، «۴۵ ثانیه».
++   ترتیب ست‌ها از خود جدول workout_sets (set_no) خونده می‌شه؛ RPC exercise_progress ست‌ها رو به ترتیب «بهترین» برمی‌گردونه. */
++function exFaNum(n){
++  if(n == null || n === "" || !isFinite(+n)) return "";
++  return String(Math.round(+n * 100) / 100).replace(".", "٫").replace(/[0-9]/g, x => "۰۱۲۳۴۵۶۷۸۹"[x]);
++}
++function exFaThousands(n){ return String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, "٬").replace(/[0-9]/g, x => "۰۱۲۳۴۵۶۷۸۹"[x]); }
++function exFaDuration(sec){
++  sec = Math.round(+sec || 0);
++  if(sec < 60) return `${exFaNum(sec)} ثانیه`;
++  const m = Math.floor(sec / 60), s = sec % 60;
++  return s ? `${exFaNum(m)} دقیقه و ${exFaNum(s)} ثانیه` : `${exFaNum(m)} دقیقه`;
++}
++// «سه‌شنبه ۱۳ آبان» — تاریخ جلسه (performed_on = تاریخ تهران، YYYY-MM-DD)
++function exFaSessionDate(iso){
++  try{
++    const d = new Date(String(iso).slice(0, 10) + "T12:00:00+03:30");
++    const parts = new Intl.DateTimeFormat("fa-IR-u-ca-persian", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Tehran" }).formatToParts(d);
++    const g = t => (parts.find(p => p.type === t) || {}).value || "";
++    return `${g("weekday")} ${g("day")} ${g("month")}`.trim();
++  }catch(e){ return exFaDate(iso); }
++}
++// متن یه ست. s: {reps, weight|weight_kg, sec|duration_sec, distance_m}
++function exSetText(s, logType){
++  s = s || {};
++  const reps = s.reps, w = s.weight != null ? s.weight : s.weight_kg, sec = s.sec != null ? s.sec : s.duration_sec, dist = s.distance_m;
++  if(logType === "distance_or_time" || (dist && !reps)){
++    const p = [];
++    if(sec) p.push(exFaDuration(sec));
++    if(dist) p.push(exFmtKm(dist));
++    return p.join(" · ") || "—";
++  }
++  if(logType === "time" || (sec && !reps)) return exFaDuration(sec);
++  const r = `${exFaNum(reps || 0)} تکرار`;
++  if(w != null && +w > 0) return logType === "reps" ? `${r} (وزن بدن + ${exFaNum(w)} کیلو)` : `${r} × ${exFaNum(w)} کیلو`;
++  return `${r} (وزن بدن)`;
++}
++// جمع‌بندی یه جلسه: «۴ ست · مجموع ۴۳ تکرار · حجم کل ۲۴۰ کیلو»
++function exSessionTotals(sets, logType){
++  sets = sets || [];
++  const out = [`${exFaNum(sets.length)} ست`];
++  let reps = 0, vol = 0, sec = 0, dist = 0;
++  sets.forEach(s => {
++    const w = s.weight != null ? s.weight : s.weight_kg, t = s.sec != null ? s.sec : s.duration_sec;
++    reps += +s.reps || 0; sec += +t || 0; dist += +s.distance_m || 0;
++    if(w && s.reps) vol += (+w) * (+s.reps);
++  });
++  if(reps) out.push(`مجموع ${exFaNum(reps)} تکرار`);
++  if(vol) out.push(`حجم کل ${exFaThousands(vol)} کیلو`);
++  if(!reps && sec) out.push(`مجموع ${exFaDuration(sec)}`);
++  if(dist) out.push(`مسافت ${exFmtKm(dist)}`);
++  return out.join(" · ");
++}
++// HTML یه جلسه — sess: {date, sets:[...], ordered:true|false}
++function exSessionHtml(sess, logType){
++  exEnsureSetCss();
++  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
++  const sets = sess.sets || [];
++  return `<div class="ex-sess">
++    <div class="ex-sess-h">${esc(exFaSessionDate(sess.date))}</div>
++    <ol class="ex-sets">${sets.map((s, k) => `<li><span class="ex-set-n">${sess.ordered === false ? "•" : `ست ${exFaNum(k + 1)}:`}</span> <span class="ex-set-v">${esc(exSetText(s, logType))}</span></li>`).join("")}</ol>
++    <div class="ex-sess-t">${esc(exSessionTotals(sets, logType))}</div>
++  </div>`;
++}
++// برچسب متریک نمودار با توضیح کوتاه (روی موبایل title دیده نمی‌شه، پس متن کوتاه هم کنارش هست)
++function exMetricLabelHtml(logType){
++  if(logType === "reps_weight") return `<abbr title="تخمین حداکثر یک تکرار" style="text-decoration:none;">e1RM</abbr> تخمینی (کیلو) <span class="ex-hint">— تخمین حداکثر یک تکرار</span>`;
++  return exMetricLabel(logType);
++}
++// ست‌های واقعی هر جلسه، به ترتیب set_no (RLS: خود ورزشکار همه‌ی جلسه‌هاش؛ مربی فقط جلسه‌های برنامه‌های خودش — همون دامنه‌ی exercise_progress)
++async function exLoadSessions(athleteId, exId){
++  try{
++    const { data, error } = await sb.from("workout_sets")
++      .select("session_id,set_no,reps,weight_kg,duration_sec,distance_m,created_at,workout_sessions!inner(performed_on,started_at,athlete_id)")
++      .eq("exercise_id", exId).eq("skipped", false).eq("workout_sessions.athlete_id", athleteId)
++      .order("set_no", { ascending: true }).limit(1000);
++    if(error || !Array.isArray(data)) return null;
++    const by = {};
++    data.forEach(r => {
++      const ws = r.workout_sessions || {};
++      const g = by[r.session_id] || (by[r.session_id] = { date: ws.performed_on, started: ws.started_at || "", sets: [], ordered: true });
++      g.sets.push(r);
++    });
++    return Object.values(by).map(g => { g.sets.sort((a, b) => (a.set_no || 0) - (b.set_no || 0) || String(a.created_at).localeCompare(String(b.created_at))); return g; })
++      .sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(b.started).localeCompare(String(a.started)));
++  }catch(e){ return null; }
++}
++// اگه خوندن مستقیم نشد: ست‌های خود RPC (ترتیبشون «بهترین اول»ه، پس شماره‌ی ست نمی‌زنیم)
++function exSessionsFromSeries(series){
++  return (series || []).slice().reverse().map(p => ({ date: p.date, sets: p.sets || [], ordered: false }));
++}
++// بعد از باز شدن جزئیات، اگه بیرون از دید بود نرم بیارش تو دید (Safari iOS و WebView اندروید)
++function exRevealEl(id){
++  const go = () => {
++    const el = document.getElementById(id);
++    if(!el) return;
++    const r = el.getBoundingClientRect(), vh = window.innerHeight || document.documentElement.clientHeight;
++    if(r.top >= 60 && r.top < vh - 120) return;   // سرش دیده می‌شه، تکون نده
++    try{ el.scrollIntoView({ behavior: "smooth", block: "start" }); }catch(e){ el.scrollIntoView(true); }
++  };
++  (window.requestAnimationFrame || setTimeout)(() => setTimeout(go, 30));
++}
++let EX_SET_CSS = false;
++function exEnsureSetCss(){
++  if(EX_SET_CSS || typeof document === "undefined") return;
++  EX_SET_CSS = true;
++  const st = document.createElement("style");
++  st.textContent = `
++  .ex-det{ margin:4px 0 10px; padding:12px; border:1px solid var(--gold-line); border-radius:14px; background:var(--surface-2); scroll-margin-top:72px; }
++  .ex-sess{ padding:10px 0; border-top:1px solid var(--divider); }
++  .ex-sess:first-child{ border-top:none; }
++  .ex-sess-h{ font-weight:800; color:var(--text); font-size:14px; margin-bottom:4px; }
++  .ex-sets{ list-style:none; margin:0; padding:0; }
++  .ex-sets li{ color:var(--text); font-size:14px; line-height:2; unicode-bidi:plaintext; }
++  .ex-set-n{ color:var(--muted); font-weight:700; display:inline-block; min-width:44px; }
++  .ex-sess-t{ color:var(--muted); font-size:12.5px; line-height:1.8; margin-top:2px; }
++  .ex-hint{ color:var(--faint); font-size:12px; }
++  .ex-row-open{ background:var(--gold-faint); }`;
++  document.head.appendChild(st);
++}
+--- live/index.html
++++ patched/index.html
+@@ -27,2 +27,4 @@
+ <script src="store-config.js"></script>
++<!-- batch 2026-11-08: راهنمای «اضافه کردن به صفحه‌ی اصلی» (فقط تب مرورگر؛ نه PWA نصب‌شده، نه اپ اندروید) -->
++<script src="peleh-install.js"></script>
+ 
+@@ -43,3 +45,3 @@
+ <link rel="stylesheet" href="peleh-app.css">
+-<!-- نسخه‌ی بتا (batch 2026-11-03): فقط زیر html.peleh-beta اعمال می‌شه -->
++<!-- قابلیت‌های batch 2026-11-03 (از ۱۷ آبان برای همه روشن) -->
+ <link rel="stylesheet" href="peleh-beta.css">
+@@ -67,3 +69,3 @@
+ <script src="plus-workout.js"></script>
+-<!-- نسخه‌ی بتا: برای حساب‌های غیربتا هیچ کاری نمی‌کنه -->
++<!-- قابلیت‌های batch 2026-11-03: لَم، آنبوردینگ، یادآوری، نمایش حرکت‌ها، BMI (PELEH_BETA_ALL) -->
+ <script src="peleh-beta.js"></script>
+--- live/peleh-beta-gate.js
++++ patched/peleh-beta-gate.js
+@@ -1,10 +1,13 @@
+-/* ===================== پله — دروازه‌ی بتا (batch 2026-11-03) =====================
+-   تصمیم وحید (۱۲ آبان ۱۴۰۵): همه‌ی تغییرهای این دسته فقط برای حساب‌های این لیست روشن‌ان.
+-   برای بقیه هیچ فایل live عوض نشده (app.js، coach-plus.js، peleh-app.css دست‌نخورده‌ان) و
+-   فایل‌های بتا خودشون اول isBeta() رو چک می‌کنن و برای بقیه هیچ کاری نمی‌کنن.
++/* ===================== پله — دروازه‌ی بتا (batch 2026-11-03، باز شده در batch 2026-11-08) =====================
++   ۱۲ آبان ۱۴۰۵: همه‌ی تغییرهای batch 2026-11-03 فقط برای حساب وحید روشن بود.
++   ۱۷ آبان ۱۴۰۵ (تصمیم وحید): «باید برای همه کاربرها نشون داده بشه» ← PELEH_BETA_ALL = true.
++   یعنی برای همه: لَم و «کتاب لَم»، ورزش لَم، آنبوردینگ (اولین تیک)، کارت «امروز فقط یه پله»، یادآوری ۲۱:۳۰ و
++   وضعیت نوتیف، نمایش تصویری حرکت‌ها، BMI خنثی، متن بلند کارها، ویرایش حرکت اختصاصی مربی (coach-beta.js).
+ 
+-   باز کردن برای همه = فقط همین یه خط:  PELEH_BETA_ALL = true
+-   (لیست سمت سرور جداست: BETA_USER_IDS در تابع send-fixed-reminders) */
+-var PELEH_BETA_ALL = false;
+-var PELEH_BETA_USERS = ["295bf792-5f7e-495c-b933-4bdd6739d9ab"]; // vahid.dorpa22@gmail.com
++   برگردوندن به حالت فقط‌وحید (اضطراری) = همین یه خط: PELEH_BETA_ALL = false
++   (سمت سرور جداست: تابع send-fixed-reminders، که مشاور ارشد مستقیم به‌روز می‌کنه) */
++var PELEH_BETA_ALL = true;
++// لَم جدا هم قابل خاموش/روشن‌شدنه (وقتی PELEH_BETA_ALL خاموشه، این تعیین می‌کنه لَم برای همه باشه یا نه)
++var PELEH_LAM_ALL = true;
++var PELEH_BETA_USERS = ["295bf792-5f7e-495c-b933-4bdd6739d9ab"]; // vahid.dorpa22@gmail.com — ابزارهای آزمایشی (پیش‌نمایش آنبوردینگ)
+ function pelehBetaUser(userId){
+@@ -12 +15,3 @@
+ }
++// فقط حساب‌های تستر (مستقل از PELEH_BETA_ALL) — برای دکمه‌های آزمایشی
++function pelehBetaTester(userId){ return !!userId && PELEH_BETA_USERS.indexOf(String(userId)) >= 0; }
+--- live/peleh-beta.css
++++ patched/peleh-beta.css
+@@ -1,4 +1,4 @@
+ /* ===================== پله — استایل نسخه‌ی بتا (batch 2026-11-03) =====================
+-   همه‌ی قاعده‌ها زیر html.peleh-beta‌ان؛ این کلاس فقط برای حساب‌های بتا اضافه می‌شه، پس برای بقیه
+-   هیچ قاعده‌ای از این فایل اعمال نمی‌شه. رنگ‌ها فقط از توکن‌های تم (peleh-theme.css). */
++   قاعده‌ها زیر html.peleh-beta‌ان (فقط حساب‌های بتا)، به‌جز بخش لَم و آنبوردینگ لَم که زیر html.peleh-lam‌ان
++   (batch 2026-11-08: لَم برای همه روشن شد — PELEH_LAM_ALL در peleh-beta-gate.js). رنگ‌ها فقط از توکن‌های تم (peleh-theme.css). */
+ 
+@@ -22,33 +22,33 @@
+ /* ---- لَم: لایه‌ها روی هم با offset صفر ---- */
+-html.peleh-beta .lam-fig{ position:relative; width:128px; height:128px; flex:none; margin:0 auto; }
+-html.peleh-beta .lam-fig img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; }
+-html.peleh-beta .lam-fig .lam-blink{ opacity:0; animation:pb-blink 5.2s infinite; }
++html.peleh-lam .lam-fig{ position:relative; width:128px; height:128px; flex:none; margin:0 auto; }
++html.peleh-lam .lam-fig img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; }
++html.peleh-lam .lam-fig .lam-blink{ opacity:0; animation:pb-blink 5.2s infinite; }
+ @keyframes pb-blink{ 0%, 93%, 100%{ opacity:0; } 95%, 97%{ opacity:1; } }
+-@media (prefers-reduced-motion: reduce){ html.peleh-beta .lam-fig .lam-blink{ animation:none; } }
+-html.peleh-beta .pb-lam-say{ background:var(--gold-faint); border:1px solid var(--gold-line); border-radius:var(--r-md, 14px); padding:10px 12px; font-size:var(--fs-14); line-height:1.9; color:var(--text); text-align:start; max-width:380px; }
+-html.peleh-beta .pb-lam-name{ font-weight:800; color:var(--gold); }
+-html.peleh-beta .pb-lam-hero{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+-html.peleh-beta .pb-sheet{ text-align:start; }
+-html.peleh-beta .pb-level{ display:flex; gap:10px; align-items:center; padding:10px; border:1px solid var(--border); border-radius:var(--r-md, 14px); margin-bottom:8px; background:var(--surface); }
+-html.peleh-beta .pb-level.got{ border-color:var(--gold-line); background:var(--gold-faint); }
+-html.peleh-beta .pb-level-ic{ width:30px; height:30px; border-radius:50%; display:grid; place-items:center; font-weight:800; background:var(--track); color:var(--muted); flex:none; }
+-html.peleh-beta .pb-level.got .pb-level-ic{ background:var(--gold); color:var(--on-gold); }
+-html.peleh-beta .pb-level-t{ font-weight:800; font-size:var(--fs-14); }
+-html.peleh-beta .pb-acc.off img{ opacity:.35; filter:grayscale(1); }
+-html.peleh-beta .pb-bar{ height:6px; border-radius:6px; background:var(--track); overflow:hidden; margin:6px 0 2px; }
+-html.peleh-beta .pb-bar i{ display:block; height:100%; background:var(--gold); border-radius:6px; }
+-html.peleh-beta .pb-sport-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:8px 0; }
+-html.peleh-beta .pb-sport{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; border-radius:var(--r-md, 14px); border:1px solid var(--border); background:var(--surface); color:var(--text); font:inherit; font-size:var(--fs-12); cursor:pointer; min-height:84px; }
+-html.peleh-beta .pb-crop{ position:relative; width:64px; height:64px; overflow:hidden; border-radius:12px; background:var(--gold-faint); display:block; flex:none; }
+-html.peleh-beta .pb-crop .lam-fig{ margin:0; max-width:none; }
+-html.peleh-beta .pb-sport.on{ border-color:var(--gold); background:var(--gold-soft); font-weight:800; }
+-html.peleh-beta .pb-sport-none{ width:48px; height:48px; display:grid; place-items:center; color:var(--faint); font-size:20px; }
+-html.peleh-beta .pb-ob-anim{ display:block; width:190px; height:190px; object-fit:contain; margin:0 auto; }
+-html.peleh-beta .pb-pop{ animation:pb-pop .5s ease-out both; }
++@media (prefers-reduced-motion: reduce){ html.peleh-lam .lam-fig .lam-blink{ animation:none; } }
++html.peleh-lam .pb-lam-say{ background:var(--gold-faint); border:1px solid var(--gold-line); border-radius:var(--r-md, 14px); padding:10px 12px; font-size:var(--fs-14); line-height:1.9; color:var(--text); text-align:start; max-width:380px; }
++html.peleh-lam .pb-lam-name{ font-weight:800; color:var(--gold); }
++html.peleh-lam .pb-lam-hero{ display:flex; flex-direction:column; align-items:center; gap:8px; }
++html.peleh-lam .pb-sheet{ text-align:start; }
++html.peleh-lam .pb-level{ display:flex; gap:10px; align-items:center; padding:10px; border:1px solid var(--border); border-radius:var(--r-md, 14px); margin-bottom:8px; background:var(--surface); }
++html.peleh-lam .pb-level.got{ border-color:var(--gold-line); background:var(--gold-faint); }
++html.peleh-lam .pb-level-ic{ width:30px; height:30px; border-radius:50%; display:grid; place-items:center; font-weight:800; background:var(--track); color:var(--muted); flex:none; }
++html.peleh-lam .pb-level.got .pb-level-ic{ background:var(--gold); color:var(--on-gold); }
++html.peleh-lam .pb-level-t{ font-weight:800; font-size:var(--fs-14); }
++html.peleh-lam .pb-acc.off img{ opacity:.35; filter:grayscale(1); }
++html.peleh-lam .pb-bar{ height:6px; border-radius:6px; background:var(--track); overflow:hidden; margin:6px 0 2px; }
++html.peleh-lam .pb-bar i{ display:block; height:100%; background:var(--gold); border-radius:6px; }
++html.peleh-lam .pb-sport-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:8px 0; }
++html.peleh-lam .pb-sport{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; border-radius:var(--r-md, 14px); border:1px solid var(--border); background:var(--surface); color:var(--text); font:inherit; font-size:var(--fs-12); cursor:pointer; min-height:84px; }
++html.peleh-lam .pb-crop{ position:relative; width:64px; height:64px; overflow:hidden; border-radius:12px; background:var(--gold-faint); display:block; flex:none; }
++html.peleh-lam .pb-crop .lam-fig{ margin:0; max-width:none; }
++html.peleh-lam .pb-sport.on{ border-color:var(--gold); background:var(--gold-soft); font-weight:800; }
++html.peleh-lam .pb-sport-none{ width:48px; height:48px; display:grid; place-items:center; color:var(--faint); font-size:20px; }
++html.peleh-lam .pb-ob-anim{ display:block; width:190px; height:190px; object-fit:contain; margin:0 auto; }
++html.peleh-lam .pb-pop{ animation:pb-pop .5s ease-out both; }
+ @keyframes pb-pop{ from{ transform:scale(.85) translateY(10px); opacity:0; } to{ transform:none; opacity:1; } }
+-@media (prefers-reduced-motion: reduce){ html.peleh-beta .pb-pop{ animation:none; } }
+-html.peleh-beta .pb-lam-strip, html.peleh-beta .pb-demo-card, html.peleh-beta .pb-return{ display:flex; gap:12px; align-items:center; cursor:pointer; margin-bottom:12px; }
+-html.peleh-beta .pb-lam-strip .lam-fig, html.peleh-beta .pb-return .lam-fig{ margin:0; }
+-html.peleh-beta .pb-beta-card .pb-wide{ width:100%; padding:10px; margin-top:8px; }
+-html.peleh-beta .pb-beta-card .lam-fig{ margin:0; }
++@media (prefers-reduced-motion: reduce){ html.peleh-lam .pb-pop{ animation:none; } }
++html.peleh-lam .pb-lam-strip, html.peleh-lam .pb-demo-card, html.peleh-lam .pb-return{ display:flex; gap:12px; align-items:center; cursor:pointer; margin-bottom:12px; }
++html.peleh-lam .pb-lam-strip .lam-fig, html.peleh-lam .pb-return .lam-fig{ margin:0; }
++html.peleh-lam .pb-beta-card .pb-wide{ width:100%; padding:10px; margin-top:8px; }
++html.peleh-lam .pb-beta-card .lam-fig{ margin:0; }
+ 
+@@ -61,18 +61,18 @@
+ /* ---- A2 آنبوردینگ ---- */
+-html.peleh-beta .pb-ob{ text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px; padding-top:34px; }
+-html.peleh-beta .pb-ob .qs-title, html.peleh-beta .pb-ob .qs-sub{ text-align:center; }
+-html.peleh-beta .pb-ob .card{ width:100%; text-align:start; }
+-html.peleh-beta .pb-ob .section-title{ width:100%; }
+-html.peleh-beta .pb-ob-btn{ width:100%; padding:14px; }
+-html.peleh-beta .pb-dots{ display:flex; gap:6px; justify-content:center; }
+-html.peleh-beta .pb-dots i{ width:22px; height:5px; border-radius:4px; background:var(--track); display:block; }
+-html.peleh-beta .pb-dots i.on{ background:var(--gold); }
+-html.peleh-beta .pb-first-grid{ display:grid; grid-template-columns:1fr; gap:10px; width:100%; }
+-html.peleh-beta .pb-first{ display:flex; align-items:center; justify-content:center; gap:10px; min-height:58px; width:100%; border-radius:var(--r-md, 14px); border:1px solid var(--gold-line); background:var(--surface); color:var(--text); font:inherit; font-size:var(--fs-16); font-weight:800; cursor:pointer; }
+-html.peleh-beta .pb-first:active{ background:var(--gold-soft); }
+-html.peleh-beta .pb-first-ic{ font-size:22px; }
+-html.peleh-beta .pb-first.pb-later{ border-color:var(--border); font-weight:700; color:var(--muted); }
+-html.peleh-beta .pb-done-tick{ font-weight:800; color:var(--ok); font-size:var(--fs-16); }
+-html.peleh-beta .pb-preview-banner{ position:sticky; top:0; z-index:5; background:var(--gold); color:var(--on-gold); font-weight:800; font-size:var(--fs-13); padding:8px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+-html.peleh-beta .pb-preview-banner button{ background:var(--on-gold); color:var(--gold); border:0; border-radius:999px; padding:4px 12px; font:inherit; font-weight:800; cursor:pointer; }
++html.peleh-lam .pb-ob{ text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px; padding-top:34px; }
++html.peleh-lam .pb-ob .qs-title, html.peleh-lam .pb-ob .qs-sub{ text-align:center; }
++html.peleh-lam .pb-ob .card{ width:100%; text-align:start; }
++html.peleh-lam .pb-ob .section-title{ width:100%; }
++html.peleh-lam .pb-ob-btn{ width:100%; padding:14px; }
++html.peleh-lam .pb-dots{ display:flex; gap:6px; justify-content:center; }
++html.peleh-lam .pb-dots i{ width:22px; height:5px; border-radius:4px; background:var(--track); display:block; }
++html.peleh-lam .pb-dots i.on{ background:var(--gold); }
++html.peleh-lam .pb-first-grid{ display:grid; grid-template-columns:1fr; gap:10px; width:100%; }
++html.peleh-lam .pb-first{ display:flex; align-items:center; justify-content:center; gap:10px; min-height:58px; width:100%; border-radius:var(--r-md, 14px); border:1px solid var(--gold-line); background:var(--surface); color:var(--text); font:inherit; font-size:var(--fs-16); font-weight:800; cursor:pointer; }
++html.peleh-lam .pb-first:active{ background:var(--gold-soft); }
++html.peleh-lam .pb-first-ic{ font-size:22px; }
++html.peleh-lam .pb-first.pb-later{ border-color:var(--border); font-weight:700; color:var(--muted); }
++html.peleh-lam .pb-done-tick{ font-weight:800; color:var(--ok); font-size:var(--fs-16); }
++html.peleh-lam .pb-preview-banner{ position:sticky; top:0; z-index:5; background:var(--gold); color:var(--on-gold); font-weight:800; font-size:var(--fs-13); padding:8px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
++html.peleh-lam .pb-preview-banner button{ background:var(--on-gold); color:var(--gold); border:0; border-radius:999px; padding:4px 12px; font:inherit; font-weight:800; cursor:pointer; }
+ 
+--- live/peleh-beta.js
++++ patched/peleh-beta.js
+@@ -20,2 +20,7 @@
+   try{ return typeof pelehBetaUser === "function" && typeof currentUser !== "undefined" && !!currentUser && pelehBetaUser(currentUser.id); }
++  catch(e){ return false; }
++}
++// batch 2026-11-08: لَم (B) برای همه‌ی کاربرهای واردشده روشنه وقتی PELEH_LAM_ALL = true؛ بقیه‌ی بخش‌ها هنوز isBeta()
++function isLamOn(){
++  try{ return isBeta() || (typeof PELEH_LAM_ALL !== "undefined" && PELEH_LAM_ALL === true && typeof currentUser !== "undefined" && !!currentUser); }
+   catch(e){ return false; }
+@@ -42,3 +47,3 @@
+ function lamSrc(name, size){ return `lam/webp${size === 512 ? 512 : 256}/${name}.webp?v=${LAM_ASSET_VER}`; }
+-function lamSport(){ const s = isBeta() ? (pbState().sport || "none") : "none"; return LAM_SPORTS.some(x => x.id === s) ? s : "none"; }
++function lamSport(){ const s = isLamOn() ? (pbState().sport || "none") : "none"; return LAM_SPORTS.some(x => x.id === s) ? s : "none"; }
+ /* figure: level 0..4، sport id، face: E01_smirk | E03_curious | E08_kind | E10_happy */
+@@ -150,3 +155,3 @@
+   const p = lamProgress().level;
+-  const max = isBeta() ? (pbState().lamMax || 0) : 0;
++  const max = isLamOn() ? (pbState().lamMax || 0) : 0;
+   return Math.max(p, max);
+@@ -154,3 +159,3 @@
+ function openLamBook(){
+-  if(!isBeta()) return;
++  if(!isLamOn()) return;
+   const pr = lamProgress(), lvl = Math.max(pr.level, pbState().lamMax || 0);
+@@ -198,3 +203,3 @@
+ function pbSetSport(id){
+-  if(!isBeta() || !LAM_SPORTS.some(s => s.id === id)) return;
++  if(!isLamOn() || !LAM_SPORTS.some(s => s.id === id)) return;
+   pbState().sport = id; save();
+@@ -203,3 +208,3 @@
+ function pbCheckLamLevelUp(){
+-  if(!isBeta() || PB.ob || PB.lamCheckBusy) return;
++  if(!isLamOn() || PB.ob || PB.lamCheckBusy) return;
+   const st = pbState();
+@@ -257,3 +262,3 @@
+   let body;
+-  if(st === "ok") body = line("✅", "نوتیف روی این دستگاه فعاله.", btn("فرستادن نوتیف آزمایشی", "pbTestLocalNotification()"));
++  if(st === "ok") body = line("✅", "نوتیف روی این دستگاه فعاله.", btn("ارسال نوتیف آزمایشی", "pbTestLocalNotification()"));
+   else if(st === "checking") body = line("⏳", "در حال بررسی اشتراک نوتیف…", btn("دوباره امتحان کن", "pbRetryPush()"));
+@@ -266,2 +271,32 @@
+ }
++
++/* batch 2026-11-08 — نوتیف آیفون: وب‌پوش آیفون فقط داخل PWA نصب‌شده (iOS 16.4+) و فقط با لمس کاربر اجازه می‌گیره.
++   • PWA نصب‌شده و اجازه هنوز پرسیده نشده ← کارت «فعال‌سازی یادآور» بالای «امروز» (دکمه = لمس کاربر ← اجازه ← اشتراک ← ذخیره)
++   • اجازه داده شده ولی اشتراک/ذخیره شکست خورده ← همون‌جا خطا با «دوباره امتحان کن» (دیگه بی‌صدا نیست)
++   • هر بار باز شدن اپ (completeSignIn) و هر ۶ ساعت با برگشتن به اپ، اشتراک گرفته/تازه و upsert می‌شه. */
++var PB_PUSH_ASK_KEY = "pelehPushAskSkip";
++function pbPushFixBanner(){
++  try{
++    if(typeof nnAvailable === "function" && nnAvailable()) return ``;          // اپ اندروید: نوتیف محلی خودش
++    if(typeof Notification === "undefined" || !("serviceWorker" in navigator) || !("PushManager" in window)) return ``;
++    if(!isStandalonePWA()) return ``;                                          // تب مرورگر: صفحه‌ی نصب (peleh-install.js) راهنمایی می‌کنه
++    if(Notification.permission === "default"){
++      let skip = 0; try{ skip = parseInt(sessionStorage.getItem(PB_PUSH_ASK_KEY) || "0", 10) || 0; }catch(e){}
++      if(skip) return ``;
++      return `<div class="card pb-push-ask" role="region" aria-label="فعال‌سازی یادآور">
++        <div style="font-weight:800; margin-bottom:4px;">🔔 فعال‌سازی یادآور</div>
++        <div class="note">برای اینکه یادآورهای روزانه بیاد، دکمه رو بزن و تو پنجره‌ی بعدی «Allow» رو انتخاب کن.</div>
++        <button type="button" class="btn btn-primary" style="width:100%; padding:12px; margin-top:10px;" onclick="requestNotificationPermission()">فعال‌سازی یادآور</button>
++        <button type="button" class="pb-link" onclick="pbPushAskLater()">بعداً</button></div>`;
++    }
++    if(Notification.permission === "granted" && PB.pushLast && !PB.pushLast.ok){
++      return `<div class="card pb-push-ask" role="alert">
++        <div style="font-weight:800; margin-bottom:4px;">⚠️ یادآورها فعال نشد</div>
++        <div class="note">${pbEsc(pbPushFailHint())}${PB.pushLast.msg ? `<br><span dir="ltr" style="font-size:11px; opacity:.75;">${pbEsc(String(PB.pushLast.msg).slice(0, 120))}</span>` : ``}</div>
++        <button type="button" class="btn btn-ghost" style="width:100%; padding:10px; margin-top:10px;" onclick="pbRetryPush()">دوباره امتحان کن</button></div>`;
++    }
++  }catch(e){}
++  return ``;
++}
++function pbPushAskLater(){ try{ sessionStorage.setItem(PB_PUSH_ASK_KEY, "1"); }catch(e){} renderAll(); }
+ 
+@@ -285,2 +320,3 @@
+         user_id: currentUser.id, endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth,
++        platform: typeof detectPushPlatform === "function" ? detectPushPlatform() : null,   // batch 2026-11-08: آیفون = 'ios'
+         updated_at: new Date().toISOString(),
+@@ -303,3 +339,3 @@
+         const perm = await Notification.requestPermission();
+-        if(perm === "granted"){ const ok = await ensurePushSubscribed(); if(!ok) showToast(pbPushFailHint(), { ms: 6000 }); }
++        if(perm === "granted"){ const ok = await ensurePushSubscribed(); showToast(ok ? "یادآور روی این دستگاه فعال شد ✓" : pbPushFailHint(), { ms: ok ? 3000 : 6000 }); }
+         else if(perm === "denied") showToast("اجازه‌ی نوتیف رد شد؛ از تنظیمات سایت/اپ می‌تونی دوباره روشنش کنی.", { ms: 5000 });
+@@ -345,3 +381,3 @@
+       if(!isBeta()) return origCard.apply(this, arguments);
+-      const cur = DATA.settings.reminderSlot || "none";
++      const cur = DATA.settings.reminderSlot || "";   // batch 2026-11-08: انتخاب‌نشده ≠ خاموش (سرور برای این‌ها یادآوری عمومی ۱۷:۰۰ و ۲۱:۰۰ می‌فرسته)
+       return `
+@@ -353,3 +389,4 @@
+           </div>
+-          <div class="note" style="margin-top:8px;">یادآوری فقط وقتی میاد که عادت امروزت هنوز تیک نخورده. ساعت سکوت ۲۲:۳۰ تا ۰۸:۰۰ رعایت می‌شه.</div>
++          ${cur ? `` : `<div class="note" style="margin-top:8px;">هنوز ساعتی انتخاب نکردی؛ فعلاً یادآوری عمومی ساعت ۱۷ و ۲۱ میاد. یکی از ساعت‌ها رو بزن تا فقط همون موقع، و فقط اگه هنوز تیک نزدی، یادآوری بیاد.</div>`}
++          <div class="note" style="margin-top:8px;">با انتخاب ساعت، یادآوری فقط وقتی میاد که عادت امروزت هنوز تیک نخورده. ساعت سکوت ۲۲:۳۰ تا ۰۸:۰۰ رعایت می‌شه.</div>
+         </div>
+@@ -381,7 +418,23 @@
+ }
+-function pbStartReal(){
+-  PB.ob = { preview: false, step: 0, sport: "none", t0: 0, picked: null };
+-  if(trackFunnel("quickstart_shown")) save();
+-}
+-function pbObGo(step){ if(!PB.ob) return; PB.ob.step = step; pbRenderOnboarding(); }
++function pbStartReal(lamOnly){
++  PB.ob = { preview: false, step: 0, sport: "none", t0: 0, picked: null, lamOnly: !!lamOnly };
++  if(!lamOnly && trackFunnel("quickstart_shown")) save();
++}
++// batch 2026-11-08 — آنبوردینگ لَم برای همه (غیربتا): فقط معرفی لَم ← ورزش لَم، بعد همون صفحه‌ی «اولین عادت‌ها»ی live.
++// اولین تیک داخل آنبوردینگ (A2) و یادآوری ۲۱:۳۰ (A3) هنوز فقط بتاست.
++function pbObGo(step){
++  if(!PB.ob) return;
++  if(PB.ob.lamOnly && step === 1) step = 2;
++  if(PB.ob.lamOnly && step === 3){ pbObLamDone(); return; }
++  PB.ob.step = step; pbRenderOnboarding();
++}
++function pbObLamDone(){
++  const st = pbState();
++  st.lamIntroSeen = true;
++  if(PB.ob && PB.ob.sport) st.sport = PB.ob.sport;
++  try{ trackFunnel("lam_intro_done", { sport: st.sport || "none" }); }catch(e){}
++  save();
++  PB.ob = null;
++  renderAll();   // needsQuickStart() هنوز درسته ← صفحه‌ی live «اولین عادت‌ها»
++}
+ function pbObExit(){
+@@ -426,3 +479,4 @@
+   const banner = ob.preview ? `<div class="pb-preview-banner">پیش‌نمایش آنبوردینگ (بتا) — هیچ چیزی ذخیره نمی‌شه <button type="button" onclick="pbObExit()">بستن</button></div>` : ``;
+-  const dots = `<div class="pb-dots" aria-hidden="true">${[0, 1, 2, 3].map(i => `<i class="${Math.floor(ob.step) >= i ? "on" : ""}"></i>`).join("")}</div>`;
++  const dots = ob.lamOnly ? `<div class="pb-dots" aria-hidden="true">${[0, 2].map(i => `<i class="${ob.step >= i ? "on" : ""}"></i>`).join("")}</div>`
++    : `<div class="pb-dots" aria-hidden="true">${[0, 1, 2, 3].map(i => `<i class="${Math.floor(ob.step) >= i ? "on" : ""}"></i>`).join("")}</div>`;
+   let body = "";
+@@ -431,3 +485,3 @@
+       <div class="pb-lam-say"><span class="pb-lam-name">لَم:</span> من لَم‌ام، از «لم دادن». معمولاً از فردا شروع می‌کنم. تو لازم نیست مثل من باشی؛ پله یعنی هر روز فقط یه قدم کوچیک.</div>
+-      <button class="btn btn-primary pb-ob-btn" onclick="pbObGo(1)">بریم، یه پله</button>`;
++      <button class="btn btn-primary pb-ob-btn" onclick="pbObGo(1)">${ob.lamOnly ? "ادامه" : "بریم، یه پله"}</button>`;
+   } else if(ob.step === 1){
+@@ -667,3 +721,6 @@
+   const sp = LAM_SPORTS.find(s => s.id === lamSport());
+-  return `<div class="section-title" style="margin-top:6px;">🧪 بتا (فقط حساب تو)</div>
++  // batch 2026-11-08: این بخش حالا برای همه‌ست؛ «پیش‌نمایش آنبوردینگ» فقط برای حساب تستر (وحید)
++  const tester = typeof pelehBetaTester === "function" && currentUser && pelehBetaTester(currentUser.id);
++  const canInstall = typeof pelehIsInstalledPWA === "function" && !pelehIsInstalledPWA() && !(typeof isNativeApp === "function" && isNativeApp());
++  return `<div class="section-title" style="margin-top:6px;">لَم و راهنماها</div>
+     <div class="card pb-beta-card">
+@@ -674,5 +731,5 @@
+       <button type="button" class="btn btn-ghost pb-wide" onclick="openLamBook()">کتاب لَم و ورزش لَم</button>
+-      <button type="button" class="btn btn-ghost pb-wide" onclick="pbStartPreview()">پیش‌نمایش آنبوردینگ (بتا)</button>
+       <button type="button" class="btn btn-ghost pb-wide" onclick="pbOpenDemoList()">راهنمای تصویری حرکت‌ها</button>
+-      <div class="note" style="margin-top:8px;">این بخش و تغییرهای این نسخه فقط برای حساب تو روشنه؛ بقیه‌ی کاربرها نسخه‌ی فعلی رو می‌بینن.</div>
++      ${canInstall ? `<button type="button" class="btn btn-ghost pb-wide" onclick="pelehShowInstallGuide(true)">اضافه کردن پله به صفحه‌ی اصلی</button>` : ``}
++      ${tester ? `<button type="button" class="btn btn-ghost pb-wide" onclick="pbStartPreview()">پیش‌نمایش آنبوردینگ (فقط حساب تستر)</button>` : ``}
+     </div>`;
+@@ -680,4 +737,18 @@
+ 
++// batch 2026-11-08: کارت لَم در تنظیمات برای کاربرهای غیربتا (بدون دکمه‌های آزمایشی)
++function pbLamSettingsSection(){
++  const sp = LAM_SPORTS.find(s => s.id === lamSport());
++  return `<div class="section-title" style="margin-top:6px;">لَم</div>
++    <div class="card pb-beta-card">
++      <div style="display:flex; gap:12px; align-items:center;">
++        ${lamFigure({ level: lamLevel(), sport: lamSport(), size: 256, px: 72 })}
++        <div style="flex:1; min-width:0;"><div style="font-weight:800;">لَم · سطح ${pbFa(lamLevel())} از ۴</div><div class="note">ورزش: ${sp ? sp.label : "—"}</div></div>
++      </div>
++      <button type="button" class="btn btn-ghost pb-wide" onclick="openLamBook()">کتاب لَم و ورزش لَم</button>
++    </div>`;
++}
++
+ /* ===================================================================================
+-   سیم‌کشی (wrapperها). همه‌شون برای کاربر غیربتا فقط تابع اصلی رو برمی‌گردونن.
++   سیم‌کشی (wrapperها). wrap = فقط بتا؛ wrapLam = لَم (همه، وقتی PELEH_LAM_ALL روشنه).
++   برای کاربری که هیچ‌کدوم نیست، فقط تابع اصلی برمی‌گرده.
+    =================================================================================== */
+@@ -689,2 +760,7 @@
+   }
++  function wrapLam(name, fn){
++    const orig = window[name];
++    if(typeof orig !== "function") return;
++    window[name] = function(){ return isLamOn() ? fn.call(this, orig, arguments) : orig.apply(this, arguments); };
++  }
+   (function(){
+@@ -693,9 +769,11 @@
+     window.renderAll = function(){
+-      const beta = isBeta();
+-      // CSS بتا فقط زیر html.peleh-beta اعمال می‌شه؛ برای بقیه کلاس هیچ‌وقت اضافه نمی‌شه
++      const beta = isBeta(), lam = isLamOn();
++      // CSS بتا فقط زیر html.peleh-beta؛ CSS لَم زیر html.peleh-lam
+       document.documentElement.classList.toggle("peleh-beta", beta);
+-      if(!beta){ PB.ob = null; return orig.apply(this, arguments); }
++      document.documentElement.classList.toggle("peleh-lam", lam);
++      if(!lam){ PB.ob = null; return orig.apply(this, arguments); }
++      if(!beta && PB.ob && !PB.ob.lamOnly) PB.ob = null;
+       if(PB.ob && currentUser && typeof cloudReady !== "undefined" && cloudReady && !loadError){ pbRenderOnboarding(); return; }
+       const r = orig.apply(this, arguments);
+-      try{ if(currentTab === "today") pbFixTaskRows(); }catch(e){ console.error(e); }
++      if(beta){ try{ if(currentTab === "today") pbFixTaskRows(); }catch(e){ console.error(e); } }
+       setTimeout(pbCheckLamLevelUp, 0);
+@@ -704,11 +782,15 @@
+   })();
+-  wrap("renderQuickStart", function(orig, args){
+-    // اسم هنوز گرفته نشده؟ همون صفحه‌ی live (که اسم رو هم می‌پرسه)
+-    if(needsOnboarding() && qsNamePhone()) return orig.apply(this, args);
+-    pbStartReal();
+-    pbRenderOnboarding();
++  wrapLam("renderQuickStart", function(orig, args){
++    // اسم هنوز گرفته نشده (بیشتر ثبت‌نام‌های پیامکی)؟ یه بار معرفی لَم + ورزش لَم، بعد صفحه‌ی live «شروع سریع»
++    // (اسم + اولین عادت‌ها). batch 2026-11-08: قبلاً این کاربرها اصلاً لَم رو نمی‌دیدن.
++    if((needsOnboarding() && qsNamePhone()) || !isBeta()){
++      if(pbState().lamIntroSeen) return orig.apply(this, args);
++      pbStartReal(true); pbRenderOnboarding(); return;
++    }
++    // اسم داره: آنبوردینگ کامل (لَم ← اولین پله با تیک ← ورزش لَم ← یادآوری ۲۱:۳۰)
++    pbStartReal(); pbRenderOnboarding();
+   });
+-  wrap("renderToday", function(orig, args){ return pbReturnCard() + orig.apply(this, args); });
+-  wrap("renderSettings", function(orig, args){ return pbSettingsSection() + orig.apply(this, args); });
+-  wrap("renderBooks", function(orig, args){
++  wrap("renderToday", function(orig, args){ return pbPushFixBanner() + pbReturnCard() + orig.apply(this, args); });
++  wrapLam("renderSettings", function(orig, args){ return (isBeta() ? pbSettingsSection() : pbLamSettingsSection()) + orig.apply(this, args); });
++  wrapLam("renderBooks", function(orig, args){
+     const html = orig.apply(this, args);
+@@ -731,3 +813,3 @@
+   // یه‌بار دوباره رندر کن تا قابلیت‌های بتا دیده بشن. برای کاربر غیربتا هیچ کاری نمی‌کنه.
+-  try{ if(isBeta() && typeof cloudReady !== "undefined" && cloudReady) renderAll(); }catch(e){ console.error(e); }
++  try{ if(isLamOn() && typeof cloudReady !== "undefined" && cloudReady) renderAll(); }catch(e){ console.error(e); }
+ })();
+--- live/peleh-install.js
++++ patched/peleh-install.js
+@@ -0,0 +1,142 @@
++/* ===================== پله — صفحه‌ی «اضافه کردن به صفحه‌ی اصلی» (batch 2026-11-08) =====================
++   تصمیم وحید (۱۷ آبان ۱۴۰۵): مثل فوتبال ۳۶۰، هر کی وب‌اپ رو تو تب مرورگر باز کنه، یه صفحه‌ی راهنمای نصب می‌بینه.
++   • آیفون/آیپد: Share ← Add to Home Screen ← Add  (نوتیف آیفون فقط بعد از نصب و باز کردن از آیکون کار می‌کنه)
++   • اندروید کروم: دکمه‌ی «نصب» (beforeinstallprompt)؛ اگه مرورگر اجازه نداد، مراحل ⋮ ← Add to Home screen
++   • بقیه: راهنمای کوتاه
++   هیچ‌وقت: داخل PWA نصب‌شده (display-mode: standalone / navigator.standalone)، داخل اپ اندروید پله (Capacitor/بازار).
++   دفعه‌ی اول، بعد حداکثر هر ۳ روز یه بار، تا وقتی نصب بشه. «متوجه شدم!» می‌بندتش.
++   این فایل به هیچ فایل دیگه‌ای وابسته نیست و زود (داخل head) لود می‌شه تا beforeinstallprompt از دست نره. */
++(function(){
++  var KEY_SEEN = "pelehInstallSeenAt", KEY_DONE = "pelehInstallDone";
++  var EVERY_MS = 3 * 24 * 3600 * 1000;
++  var deferred = null;
++
++  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
++  function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
++  function isStandalone(){
++    try{ return window.matchMedia("(display-mode: standalone)").matches || window.matchMedia("(display-mode: fullscreen)").matches || window.navigator.standalone === true; }
++    catch(e){ return window.navigator.standalone === true; }
++  }
++  function isNative(){
++    try{ return !!(window.Capacitor && (typeof window.Capacitor.isNativePlatform === "function" ? window.Capacitor.isNativePlatform() : window.Capacitor.getPlatform && window.Capacitor.getPlatform() !== "web")); }
++    catch(e){ return false; }
++  }
++  var ua = navigator.userAgent || "";
++  function isIOS(){ return /iPad|iPhone|iPod/.test(ua) || (ua.indexOf("Macintosh") >= 0 && navigator.maxTouchPoints > 1); }
++  function isAndroid(){ return /Android/i.test(ua); }
++  function isInApp(){ return /Instagram|FBAN|FBAV|Telegram|; wv\)|Line\//i.test(ua); }
++
++  // اندروید/کروم: رویداد نصب رو نگه دار تا دکمه‌ی «نصب» خودمون نشونش بده
++  window.addEventListener("beforeinstallprompt", function(e){
++    e.preventDefault();
++    deferred = e;
++    var b = document.getElementById("pi-install-btn");
++    if(b) b.style.display = "";
++  });
++  window.addEventListener("appinstalled", function(){ lsSet(KEY_DONE, "1"); close(); });
++
++  var ICON_SHARE = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>';
++  var ICON_ADDHOME = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8.5v7M8.5 12h7"/></svg>';
++  var ICON_ADD = '<span style="font:800 15px/1 system-ui,-apple-system,sans-serif;letter-spacing:.2px;direction:ltr;">Add</span>';
++  var ICON_DOTS = '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>';
++  var ICON_PHONE = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>';
++  var ICON_CHECK = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
++
++  function step(n, icon, en, fa){
++    return '<li class="pi-step"><span class="pi-num">' + n + '</span><span class="pi-ic">' + icon + '</span>' +
++      '<span class="pi-tx">' + (en ? '<b dir="ltr">' + en + '</b>' : '') + '<span>' + fa + '</span></span></li>';
++  }
++  function body(){
++    if(isIOS()){
++      var head = isInApp()
++        ? '<p class="pi-note">الان پله داخل مرورگر یه برنامه‌ی دیگه (مثل اینستاگرام یا تلگرام) باز شده. اول از منوی همون برنامه «Open in Safari» رو بزن، بعد این سه مرحله:</p>' : '';
++      return head + '<ol class="pi-steps">' +
++        step("۱", ICON_SHARE, "Share", "انتخاب این گزینه از نوار پایین (در Safari)") +
++        step("۲", ICON_ADDHOME, "Add to Home Screen", "انتخاب این گزینه از منوی ظاهر شده") +
++        step("۳", ICON_ADD, "Add", "زدن روی این گزینه، بالای صفحه") + '</ol>' +
++        '<p class="pi-note">بعد از نصب، پله رو فقط از آیکونش روی صفحه‌ی اصلی باز کن؛ یادآورها فقط اون‌جا کار می‌کنن.</p>';
++    }
++    if(isAndroid()){
++      return '<button type="button" id="pi-install-btn" class="pi-install" ' + (deferred ? '' : 'style="display:none"') + '>نصب پله</button>' +
++        '<ol class="pi-steps">' +
++        step("۱", ICON_DOTS, "⋮", "منوی سه‌نقطه‌ی بالای مرورگر رو بزن") +
++        step("۲", ICON_ADDHOME, "Add to Home screen / Install app", "این گزینه رو انتخاب کن") +
++        step("۳", ICON_CHECK, "Install / Add", "تأیید کن؛ آیکون پله رو صفحه‌ی اصلی میاد") + '</ol>' +
++        '<p class="pi-note">نسخه‌ی اندروید پله تو کافه‌بازار هم هست.</p>';
++    }
++    return '<ol class="pi-steps">' +
++      step("۱", ICON_PHONE, "", "پله رو با گوشی باز کن (آیفون: Safari، اندروید: Chrome)") +
++      step("۲", ICON_ADDHOME, "Add to Home Screen / Install", "از منوی مرورگر این گزینه رو بزن") +
++      step("۳", ICON_CHECK, "", "از این به بعد پله رو از آیکونش باز کن") + '</ol>';
++  }
++  var CSS = '' +
++    '#pi-wrap{position:fixed;inset:0;z-index:10050;background:#1B2A4A;color:#F2EAD3;font-family:Vazirmatn,Tahoma,sans-serif;direction:rtl;overflow-y:auto;-webkit-overflow-scrolling:touch;}' +
++    '#pi-wrap *{box-sizing:border-box;}' +
++    '.pi-in{max-width:440px;margin:0 auto;min-height:100%;padding:calc(28px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;text-align:center;}' +
++    '.pi-logo{width:76px;height:76px;border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,.35);}' +
++    '.pi-brand{font-weight:900;font-size:22px;margin:10px 0 2px;color:#C99A3C;}' +
++    '.pi-title{font-weight:800;font-size:19px;line-height:1.8;margin:10px 0 4px;}' +
++    '.pi-why{font-size:14px;line-height:1.9;color:rgba(242,234,211,.82);margin:0 0 18px;}' +
++    '.pi-steps{list-style:none;margin:0 0 6px;padding:0;width:100%;display:flex;flex-direction:column;gap:10px;}' +
++    '.pi-step{display:flex;align-items:center;gap:12px;background:rgba(242,234,211,.06);border:1px solid rgba(201,154,60,.35);border-radius:16px;padding:12px 14px;text-align:start;}' +
++    '.pi-num{flex:none;width:28px;height:28px;border-radius:50%;background:#C99A3C;color:#1B2A4A;font-weight:900;display:grid;place-items:center;font-size:15px;}' +
++    '.pi-ic{flex:none;width:44px;height:44px;border-radius:12px;background:rgba(242,234,211,.1);color:#F2EAD3;display:grid;place-items:center;}' +
++    '.pi-tx{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:14px;line-height:1.7;}' +
++    '.pi-tx b{font-weight:800;color:#F2EAD3;text-align:right;unicode-bidi:isolate;}' +
++    '.pi-tx span{color:rgba(242,234,211,.8);}' +
++    '.pi-note{font-size:13px;line-height:1.9;color:rgba(242,234,211,.72);margin:10px 0 0;}' +
++    '.pi-install{width:100%;min-height:52px;border:0;border-radius:16px;background:#F2EAD3;color:#1B2A4A;font:inherit;font-weight:900;font-size:17px;margin:0 0 14px;cursor:pointer;}' +
++    '.pi-lam{position:relative;width:96px;height:96px;margin:16px auto 6px;}' +
++    '.pi-lam img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}' +
++    '.pi-ok{width:100%;min-height:54px;border:0;border-radius:16px;background:#C99A3C;color:#1B2A4A;font:inherit;font-weight:900;font-size:17px;margin-top:auto;cursor:pointer;}' +
++    '.pi-ok:focus-visible,.pi-install:focus-visible{outline:3px solid #F2EAD3;outline-offset:3px;}';
++
++  function lamImgs(){
++    var v = "20261104", L = ["lam_shadow", "lam_body", "lam_face_E10_happy"];
++    return '<div class="pi-lam" aria-hidden="true">' + L.map(function(n){ return '<img src="lam/webp256/' + n + '.webp?v=' + v + '" alt="" onerror="this.remove()">'; }).join("") + '</div>';
++  }
++  function close(){
++    var w = document.getElementById("pi-wrap");
++    if(w) w.remove();
++    document.documentElement.style.overflow = "";
++  }
++  function open(force){
++    if(document.getElementById("pi-wrap")) return;
++    if(!force && !shouldShow()) return;
++    lsSet(KEY_SEEN, String(Date.now()));
++    if(!document.getElementById("pi-css")){ var st = document.createElement("style"); st.id = "pi-css"; st.textContent = CSS; document.head.appendChild(st); }
++    var w = document.createElement("div");
++    w.id = "pi-wrap";
++    w.setAttribute("role", "dialog"); w.setAttribute("aria-modal", "true"); w.setAttribute("aria-labelledby", "pi-title");
++    w.innerHTML = '<div class="pi-in">' +
++      '<img class="pi-logo" src="icon-192.png" alt="پله">' +
++      '<div class="pi-brand">پله</div>' +
++      '<div class="pi-title" id="pi-title">وب اپلیکیشن پله را به صفحه اصلی موبایل خود اضافه کنید</div>' +
++      '<p class="pi-why">برای اینکه یادآورهای روزانه برات بیاد و پله مثل یه اپ واقعی، بدون نوار آدرس، باز بشه.</p>' +
++      body() + lamImgs() +
++      '<button type="button" class="pi-ok" id="pi-ok">متوجه شدم!</button></div>';
++    document.body.appendChild(w);
++    document.documentElement.style.overflow = "hidden";
++    document.getElementById("pi-ok").onclick = close;
++    var ib = document.getElementById("pi-install-btn");
++    if(ib) ib.onclick = function(){
++      if(!deferred) return;
++      var d = deferred; deferred = null;
++      d.prompt();
++      (d.userChoice || Promise.resolve({})).then(function(c){ if(c && c.outcome === "accepted"){ lsSet(KEY_DONE, "1"); close(); } else { ib.style.display = "none"; } }).catch(function(){});
++    };
++    setTimeout(function(){ var b = document.getElementById("pi-ok"); if(b) try{ b.focus({ preventScroll: true }); }catch(e){} }, 50);
++    document.addEventListener("keydown", function esc(e){ if(e.key === "Escape"){ close(); document.removeEventListener("keydown", esc); } });
++  }
++  function shouldShow(){
++    if(isStandalone() || isNative()) return false;
++    if(lsGet(KEY_DONE) === "1" && !isIOS()) return false;   // آیفون رویداد نصب نداره؛ فقط با standalone می‌فهمیم
++    var t = parseInt(lsGet(KEY_SEEN) || "0", 10) || 0;
++    return !t || (Date.now() - t) >= EVERY_MS;
++  }
++  // برای دکمه‌ی «چطور نصبش کنم؟» یا تست: pelehShowInstallGuide(true)
++  window.pelehShowInstallGuide = function(force){ open(!!force); };
++  window.pelehIsInstalledPWA = isStandalone;
++  function start(){ setTimeout(function(){ try{ open(false); }catch(e){} }, 1200); }
++  if(document.readyState === "complete") start(); else window.addEventListener("load", start);
++})();
+--- live/plus-workout.js
++++ patched/plus-workout.js
+@@ -394,3 +394,4 @@
+   const ex = plusBankMap()[it.exercise_id] || {};
+-  const prev = (it.prev || []).map(p => p.sec ? `${toFaDigits(p.sec)}ث` : `${p.weight ? toFaDigits(p.weight) + " × " : ""}${toFaDigits(p.reps || 0)}`).join("، ");
++  // batch 2026-11-08: واحد صریح به‌جای «۶۰ × ۸» (نامشخص بود کدوم وزنه‌ست کدوم تکرار)
++  const prev = (it.prev || []).map((p, k) => `ست ${toFaDigits(k + 1)}: ${exSetText(p, it.log_type)}`).join(" · ");
+   const tag = it.cardio ? "هوازی" : it.scheme === "pyramid" ? "هرمی" : it.scheme === "drop" ? "دراپ‌ست" : "";
+@@ -421,3 +422,3 @@
+     if(pv && !s.skipped && !it.cardio){
+-      if(timeBased && pv.sec){ const d = (s.duration_sec || 0) - pv.sec; pvTxt = `قبلاً ${toFaDigits(pv.sec)}ث${d ? ` · <b class="${d > 0 ? "up" : ""}">${d > 0 ? "+" : "−"}${toFaDigits(Math.abs(d))}ث</b>` : ``}`; }
++      if(timeBased && pv.sec){ const d = (s.duration_sec || 0) - pv.sec; pvTxt = `قبلاً ${exFaDuration(pv.sec)}${d ? ` · <b class="${d > 0 ? "up" : ""}"><bdi dir="ltr">${d > 0 ? "+" : "−"}${toFaDigits(Math.abs(d))}</bdi> ثانیه</b>` : ``}`; }
+       else if(!timeBased){
+@@ -427,3 +428,3 @@
+         if(dr) parts.push(`<b class="${dr > 0 ? "up" : ""}"><bdi dir="ltr">${dr > 0 ? "+" : "−"}${toFaDigits(Math.abs(dr))}</bdi> تکرار</b>`);
+-        pvTxt = `قبلاً ${pv.weight ? toFaDigits(pv.weight) + " × " : ""}${toFaDigits(pv.reps || 0)}${parts.length ? " · " + parts.join(" ") : ""}`;
++        pvTxt = `قبلاً ${exSetText(pv, it.log_type)}${parts.length ? " · " + parts.join(" ") : ""}`;
+       }
+@@ -450,3 +451,3 @@
+     ${!it.skipped ? `<div class="pw-item-actions">
+-      <span class="pw-prev">${prev ? `قبلاً: ${prev}` : ``}</span>
++      <span class="pw-prev">${prev ? `جلسه‌ی قبل: ${prev}` : ``}</span>
+       <button class="link-btn" onclick="pwAddSet(${i})">${pi("plus")} ست</button>
+@@ -481,7 +482,22 @@
+ async function plusOpenExerciseProgress(exId){
+-  PLUS_X.progressDetail = { exercise_id: exId, series: null };
+-  renderAll();
+-  const { data } = await sb.rpc("exercise_progress", { p_athlete: currentUser.id, p_exercise: exId });
+-  PLUS_X.progressDetail = { exercise_id: exId, series: data || [] };
+-  renderAll();
++  // batch 2026-11-08: باز/بسته شدن زیر همون ردیف (قبلاً بالای صفحه باز می‌شد) + جلسه‌ها با ست‌های خوانا
++  if(PLUS_X.progressDetail && PLUS_X.progressDetail.exercise_id === exId){ PLUS_X.progressDetail = null; renderAll(); return; }
++  PLUS_X.progressDetail = { exercise_id: exId, series: null, sessions: null };
++  renderAll(); exRevealEl("pp-det");
++  const [prog, sessions] = await Promise.all([
++    sb.rpc("exercise_progress", { p_athlete: currentUser.id, p_exercise: exId }),
++    exLoadSessions(currentUser.id, exId),
++  ]);
++  if(!PLUS_X.progressDetail || PLUS_X.progressDetail.exercise_id !== exId) return;
++  PLUS_X.progressDetail = { exercise_id: exId, series: prog.data || [], sessions };
++  renderAll(); exRevealEl("pp-det");
++}
++function plusProgressDetailPanel(det, logType){
++  const sess = det.sessions || (det.series ? exSessionsFromSeries(det.series) : null);
++  return `<div class="ex-det" id="pp-det">
++    ${det.series ? exLineChartSvg(det.series.map(p => ({ x: exFaDate(p.date), y: p.value })), { label: exMetricLabel(logType) }) : `<div class="note">در حال بارگذاری...</div>`}
++    ${det.series ? `<div class="note">${exMetricLabelHtml(logType)}</div>` : ``}
++    ${sess ? `<div style="font-weight:800; margin-top:8px;">جلسه‌ها (${toFaDigits(sess.length)})</div>${sess.map(s => exSessionHtml(s, logType)).join("")}
++      ${sess.length && sess[0].ordered === false ? `<div class="note">ترتیب ست‌ها در دسترس نبود؛ ست‌ها از بهترین به پایین مرتب شدن.</div>` : ``}` : ``}
++    <button class="link-btn" onclick="event.stopPropagation(); PLUS_X.progressDetail=null; renderAll();">بستن</button></div>`;
+ }
+@@ -489,3 +505,3 @@
+   if(r.log_type === "time" || r.log_type === "distance_or_time") return `${toFaDigits(r.best_duration || 0)} ثانیه`;
+-  if(r.best_weight) return `${toFaDigits(r.best_weight)} کیلو`;
++  if(r.best_weight) return `${exFaNum(r.best_weight)} کیلو`;
+   return `${toFaDigits(r.best_reps || 0)} تکرار`;
+@@ -498,9 +514,5 @@
+   return `<div class="plus-wrap">${plusHeader("📈 پیشرفت من")}
+-    ${det ? `<div class="card"><div style="font-weight:900; margin-bottom:6px;">${plusEsc(plusExName(det.exercise_id))}</div>
+-      ${det.series ? exLineChartSvg(det.series.map(p => ({ x: exFaDate(p.date), y: p.value })), { label: exMetricLabel((P.find(r => r.exercise_id === det.exercise_id) || {}).log_type) }) : `<div class="note">...</div>`}
+-      <div class="note">${exMetricLabel((P.find(r => r.exercise_id === det.exercise_id) || {}).log_type)}</div>
+-      <button class="link-btn" onclick="PLUS_X.progressDetail=null; renderAll();">بستن نمودار</button></div>` : ``}
+-    <div class="card">${P.length ? P.map(r => { const st = EX_STATUS_FA[r.status] || ["", "gray"]; return `<div class="plus-row" onclick="plusOpenExerciseProgress('${r.exercise_id}')">
++    <div class="card">${P.length ? P.map(r => { const st = EX_STATUS_FA[r.status] || ["", "gray"]; const open = det && det.exercise_id === r.exercise_id; return `<div class="plus-row ${open ? "ex-row-open" : ""}" role="button" tabindex="0" aria-expanded="${open ? "true" : "false"}" onclick="plusOpenExerciseProgress('${r.exercise_id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); this.click();}">
+         <span style="min-width:0;"><b>${plusEsc(plusExName(r.exercise_id))}</b><br><span class="note">بهترین: ${plusBestLabel(r)} · ${toFaDigits(r.sessions)} جلسه</span></span>
+-        <span class="${st[1] === "green" ? "badge-soft" : st[1] === "red" ? "badge-warn" : "badge-soft"}">${st[0]}</span></div>`; }).join("")
++        <span class="${st[1] === "green" ? "badge-soft" : st[1] === "red" ? "badge-warn" : "badge-soft"}">${st[0]}</span></div>${open ? plusProgressDetailPanel(det, r.log_type) : ``}`; }).join("")
+       : `<div class="note">هنوز تمرینی ثبت نکردی. بعد از چند جلسه، روند هر حرکت اینجا دیده می‌شه.</div>`}</div>
+@@ -565,4 +577,23 @@
+ 
+-/* ---------- G: اشتراک ---------- */
+-function renderPlusSubscriptionCard(){
++/* ---------- G: اشتراک ----------
++   batch 2026-11-08 (تصمیم وحید): سلامت پلاس از ۱ آذر ۱۴۰۵ پولیه.
++   • نسخه‌ی کافه‌بازار: کارت خرید همیشه دیده می‌شه (حتی وقتی plus_require_entitlement خاموشه) تا داور بازار و کاربرها
++     بتونن بخرن؛ دکمه فقط به plus_bazaar_enabled بستگی داره. فقط پرداخت درون‌برنامه‌ای بازار — هیچ لینک وبی.
++   • وب و اندروید مستقیم: زیبال پشت plus_payments_enabled، با همون متن. هیچ UI بازار روی وب نیست.
++   • وقتی plus_require_entitlement روشن بشه (۱ آذر)، بدون اشتراک ← همین کارت به‌عنوان پیام اشتراک (paywall).
++   PLUS_COUNT_FROM_LAUNCH: فقط وقتی true بمونه که migration «2026-11-08_plus_grant_from_1azar.sql» اجرا شده باشه
++   (خرید قبل از ۱ آذر = ۳۰ روز از ۱ آذر). اگه اجرا نشد، false کن تا متن «از همین امروز» نشون داده بشه. */
++var PLUS_PAID_FROM = Date.parse("2026-11-22T00:00:00+03:30");   // ۱ آذر ۱۴۰۵، تهران
++var PLUS_COUNT_FROM_LAUNCH = true;
++function plusPreLaunch(){ return Date.now() < PLUS_PAID_FROM; }
++function plusFreeNote(){
++  return plusPreLaunch() ? `<div class="note" style="color:var(--gold); margin-bottom:6px;">سلامت پلاس تا ۱ آذر رایگانه؛ از ۱ آذر با اشتراک ماهانه ادامه پیدا می‌کنه.</div>` : ``;
++}
++function plusDaysNote(days){
++  const d = toFaDigits(days || 30);
++  return plusPreLaunch() && PLUS_COUNT_FROM_LAUNCH ? `${d} روز دسترسی کامل؛ اگه قبل از ۱ آذر بخری، ${d} روزت از ۱ آذر حساب می‌شه.` : `${d} روز دسترسی کامل، از همین امروز.`;
++}
++function renderPlusSubscriptionCard(opts){
++  opts = opts || {};
++  if(typeof PLUS_X !== "undefined" && PLUS_X.showSub) opts.always = true;
+   const st = PLUS.status || {};
+@@ -570,22 +601,27 @@
+   const daysLeft = until ? Math.ceil((until - Date.now()) / 86400000) : 0;
++  const paidActive = until && until > Date.now();
+   const needs = !st.has_plus && st.require_entitlement;
+   const soon = st.has_plus && until && daysLeft <= 3;
+-  if(!needs && !soon) return ``;
+-  const head = `<div style="font-weight:900; margin-bottom:6px;">${soon ? `⏰ ${toFaDigits(Math.max(0, daysLeft))} روز تا پایان اشتراکت مونده` : "💎 اشتراک سلامت پلاس"}</div>`;
+-  // نسخه‌ی کافه‌بازار: طبق قوانین بازار فقط پرداخت درون‌برنامه‌ای بازار. قیمت رو خود پنل توسعه‌دهنده‌ی بازار تعیین می‌کنه
+-  // (برای همین اینجا قیمت نشون داده نمی‌شه؛ صفحه‌ی امن بازار نشونش می‌ده). مدت از پنل ادمین (plus_bazaar_days).
+-  if(plusIsBazaarBuild()){
+-    if(!st.bazaar_enabled) return `<div class="card plus-value"><div class="note">${soon ? `⏰ ${toFaDigits(Math.max(0, daysLeft))} روز تا پایان اشتراکت مونده. ` : ""}خرید اشتراک سلامت پلاس از کافه‌بازار به‌زودی فعال می‌شه.</div></div>`;
+-    return `<div class="card plus-value">${head}
+-      <div class="note">${toFaDigits(st.bazaar_days || 30)} روز دسترسی کامل. پرداخت از طریق صفحه‌ی امن کافه‌بازار انجام می‌شه و قیمت نهایی همون‌جا نمایش داده می‌شه.</div>
+-      <button id="plus_bz_btn" class="btn btn-primary" style="display:block; width:100%; margin-top:10px;" onclick="plusPayBazaar()">خرید از کافه‌بازار</button>
+-      <div class="note" id="plus_bz_err" style="margin-top:6px; color:var(--bad, #e5484d);"></div></div>`;
+-  }
+-  if(!st.payments_enabled) return needs ? `<div class="card plus-value"><div style="font-weight:900; margin-bottom:6px;">مربی برنامه می‌ده، تو فقط اجرا و تیک می‌زنی.</div>
+-      <div class="note">✓ برنامه‌ی شخصی از مربی واقعی<br>✓ ثبت تمرین با کمترین لمس، حتی آفلاین<br>✓ مربی روند هر حرکتت رو جدا می‌بینه</div>
+-      <div class="note" style="margin-top:8px; color:var(--gold);">در نسخه‌ی آزمایشی، اشتراک توسط پشتیبانی فعال می‌شه.</div></div>` : ``;
+-  if(st.pending_payment) return `<div class="card plus-value"><div class="note">⏳ رسید پرداختت در حال بررسیه؛ بعد از تأیید، اشتراک خودکار فعال می‌شه.</div></div>`;
++  const bazaar = plusIsBazaarBuild();
++  // کی کارت دیده بشه: بازار همیشه؛ وب وقتی لازمه، رو به اتمامه، از تنظیمات باز شده، یا زیبال روشنه
++  if(!bazaar && !needs && !soon && !opts.always && !st.payments_enabled) return ``;
++  const status = paidActive ? `<div class="note" style="margin-bottom:6px;">✓ اشتراکت تا ${plusEsc(typeof jalaliDateLabel === "function" ? toFaDigits(jalaliDateLabel(new Date(until))) : new Date(until).toLocaleDateString("fa-IR"))} فعاله${soon ? ` — ${toFaDigits(Math.max(0, daysLeft))} روز مونده` : ``}.</div>` : ``;
++  const head = `<div style="font-weight:900; margin-bottom:6px;">${needs ? "💎 برای ادامه‌ی سلامت پلاس، اشتراک لازمه" : "💎 اشتراک سلامت پلاس"}</div>`;
++  const wrap = inner => `<div class="card plus-value" id="plus-sub-card">${head}${status}${plusFreeNote()}${inner}</div>`;
++  // نسخه‌ی کافه‌بازار: طبق قوانین بازار فقط پرداخت درون‌برنامه‌ای بازار. قیمت رو پنل توسعه‌دهنده‌ی بازار تعیین می‌کنه
++  // و صفحه‌ی امن بازار نشونش می‌ده. مدت از پنل ادمین (plus_bazaar_days).
++  if(bazaar){
++    if(!st.bazaar_enabled) return wrap(`<div class="note">خرید اشتراک سلامت پلاس از کافه‌بازار به‌زودی فعال می‌شه.</div>`);
++    return wrap(`<div class="note">${plusDaysNote(st.bazaar_days || 30)} پرداخت از طریق صفحه‌ی امن کافه‌بازار انجام می‌شه و قیمت نهایی همون‌جا نمایش داده می‌شه.</div>
++      <button id="plus_bz_btn" class="btn btn-primary" style="display:block; width:100%; margin-top:10px;" onclick="plusPayBazaar()">${paidActive ? "تمدید اشتراک از کافه‌بازار" : "خرید اشتراک ماهانه از کافه‌بازار"}</button>
++      <div class="note" id="plus_bz_err" style="margin-top:6px; color:var(--bad, #e5484d);"></div>`);
++  }
++  if(!st.payments_enabled){
++    if(needs) return wrap(`<div class="note">✓ برنامه‌ی شخصی از مربی واقعی<br>✓ ثبت تمرین با کمترین لمس، حتی آفلاین<br>✓ مربی روند هر حرکتت رو جدا می‌بینه</div>
++      <div class="note" style="margin-top:8px; color:var(--gold);">پرداخت آنلاین به‌زودی فعال می‌شه؛ تا اون موقع اشتراک رو پشتیبانی فعال می‌کنه.</div>`);
++    return opts.always ? wrap(`<div class="note">خرید آنلاین اشتراک به‌زودی همین‌جا فعال می‌شه.</div>`) : ``;
++  }
++  if(st.pending_payment) return wrap(`<div class="note">⏳ رسید پرداختت در حال بررسیه؛ بعد از تأیید، اشتراک خودکار فعال می‌شه.</div>`);
+   // وب و اندروید مستقیم: درگاه اختصاصی زیبال سلامت پلاس؛ قیمت و مدت از پنل ادمین پله
+-  return `<div class="card plus-value">${head}
+-    <div class="note">${toFaDigits(st.plan_days || 30)} روز — ${toFaDigits(Number(st.price_toman || 0).toLocaleString("en"))} تومان. با تمدید، همه‌چیز از همون نقطه ادامه پیدا می‌کنه.</div>
++  return wrap(`<div class="note">${plusDaysNote(st.plan_days || 30)} قیمت: ${toFaDigits(Number(st.price_toman || 0).toLocaleString("en"))} تومان. با تمدید، همه‌چیز از همون نقطه ادامه پیدا می‌کنه.</div>
+     <button id="plus_pay_btn" class="btn btn-primary" style="display:block; width:100%; margin-top:10px;" onclick="plusPayOnline()">پرداخت آنلاین و فعال‌سازی</button>
+@@ -595,4 +631,17 @@
+       <label class="btn btn-ghost" style="display:block; text-align:center; margin-top:8px; cursor:pointer;">📎 آپلود رسید پرداخت
+-        <input type="file" accept="image/*" style="display:none" onchange="plusUploadReceipt(this)"></label></details>` : ``}
+-  </div>`;
++        <input type="file" accept="image/*" style="display:none" onchange="plusUploadReceipt(this)"></label></details>` : ``}`);
++}
++// «تنظیمات ← اشتراک ← اشتراک سلامت پلاس»: صفحه‌ی سلامت پلاس رو باز می‌کنه و کارت اشتراک رو میاره تو دید
++function plusOpenSubscription(){
++  if(typeof CLIENT_FLAGS !== "undefined" && !CLIENT_FLAGS.plus_enabled){ showToast("سلامت پلاس هنوز برای حسابت فعال نشده."); return; }
++  PLUS.view = "home";
++  PLUS_X.showSub = true;
++  switchTab("plus");
++  let n = 0;
++  const go = () => {
++    const el = document.getElementById("plus-sub-card");
++    if(el){ try{ el.scrollIntoView({ behavior: "smooth", block: "center" }); }catch(e){ el.scrollIntoView(); } return; }
++    if(++n < 40) setTimeout(go, 150);
++  };
++  setTimeout(go, 150);
+ }
+--- live/sw.js
++++ patched/sw.js
+@@ -1,2 +1,2 @@
+-const CACHE_NAME = "peleh-v25b"; // v25b (batch 2026-11-03، نسخه‌ی بتا؛ جدا از v25ِ اصلاح SMS — دومی که منتشر بشه peleh-v26): فایل‌های بتا (peleh-beta-gate.js، peleh-beta.js، peleh-beta.css) به shell اضافه شدن؛ نصب کش فایل‌به‌فایل (یه 404 دیگه کل کش آفلاین رو خالی نمی‌کنه). رفتار push و کلیک نوتیف بی‌تغییر — v24: پیام همگانی ادمین (بنر داخل اپ) — v23: رفع خطای داشبورد ادمین (تابع fa سراسری شد) — v22: فعال شدن سوییچ خودکار به سرور ایران (کلید anon سرور ایران در peleh-failover-config.js) — v21: رفع فاصله‌ی چپ و راست عکس پروفایل در نوار بالا (padding پیش‌فرض دکمه) — v20 (2.4.0): رفع حفره‌های امنیتی، به‌روز شدن لحظه‌ای مربی↔ورزشکار (peleh-live.js)، BMI، عکس پیشرفت، قالب مربی — v19: سوییچ خودکار به سرور ایران (peleh-failover.js) — // v18: انتخاب چیپ عادت = پر کردن فرم (روز/امتیاز قبل از ذخیره) — v17: گزارش منبع نصب (reportClientSource) — v15: ادغام مدیریت عادت‌ها + حرکت اختصاصی فوری مربی
++const CACHE_NAME = "peleh-v27"; // v27 (batch 2026-11-08): جزئیات پیشرفت حرکت زیر همون ردیف باز می‌شه + ست‌ها با واحد صریح (ست ۱: ۱۰ تکرار × ۷٫۵ کیلو) + نشان پیام تازه‌ی پشتیبانی — v25b (batch 2026-11-03، نسخه‌ی بتا؛ جدا از v25ِ اصلاح SMS — دومی که منتشر بشه peleh-v26): فایل‌های بتا (peleh-beta-gate.js، peleh-beta.js، peleh-beta.css) به shell اضافه شدن؛ نصب کش فایل‌به‌فایل (یه 404 دیگه کل کش آفلاین رو خالی نمی‌کنه). رفتار push و کلیک نوتیف بی‌تغییر — v24: پیام همگانی ادمین (بنر داخل اپ) — v23: رفع خطای داشبورد ادمین (تابع fa سراسری شد) — v22: فعال شدن سوییچ خودکار به سرور ایران (کلید anon سرور ایران در peleh-failover-config.js) — v21: رفع فاصله‌ی چپ و راست عکس پروفایل در نوار بالا (padding پیش‌فرض دکمه) — v20 (2.4.0): رفع حفره‌های امنیتی، به‌روز شدن لحظه‌ای مربی↔ورزشکار (peleh-live.js)، BMI، عکس پیشرفت، قالب مربی — v19: سوییچ خودکار به سرور ایران (peleh-failover.js) — // v18: انتخاب چیپ عادت = پر کردن فرم (روز/امتیاز قبل از ذخیره) — v17: گزارش منبع نصب (reportClientSource) — v15: ادغام مدیریت عادت‌ها + حرکت اختصاصی فوری مربی
+ // health.js قبلاً تو این لیست نبود، پس تو حالت آفلاین تب «سلامت» خراب می‌شد
+@@ -5,3 +5,3 @@
+ // v13: طراحی جدید — توکن‌های تم، استایل اپ و آیکون‌های خطی هم برای حالت آفلاین
+-const SHELL_FILES = ["/", "/index.html", "/peleh-theme.css", "/peleh-app.css", "/peleh-beta.css", "/peleh-ui.js", "/peleh-beta-gate.js", "/peleh-keys.js", "/app.js", "/books.js", "/health-catalog.js", "/health.js", "/native-notify.js", "/exercise-search.js", "/plus.js", "/plus-workout.js", "/peleh-beta.js", "/supabase.js", "/peleh-failover-config.js", "/peleh-failover.js", "/peleh-live.js", "/store-config.js", "/fonts/Vazirmatn-Variable.woff2", "/privacy.html", "/manifest.json", "/icon-180.png", "/icon-192.png", "/icon-512.png"];
++const SHELL_FILES = ["/", "/index.html", "/peleh-theme.css", "/peleh-app.css", "/peleh-beta.css", "/peleh-ui.js", "/peleh-beta-gate.js", "/peleh-keys.js", "/app.js", "/books.js", "/health-catalog.js", "/health.js", "/native-notify.js", "/exercise-search.js", "/plus.js", "/plus-workout.js", "/peleh-beta.js", "/supabase.js", "/peleh-failover-config.js", "/peleh-failover.js", "/peleh-live.js", "/store-config.js", "/peleh-install.js", "/fonts/Vazirmatn-Variable.woff2", "/privacy.html", "/manifest.json", "/icon-180.png", "/icon-192.png", "/icon-512.png"];
+ 
