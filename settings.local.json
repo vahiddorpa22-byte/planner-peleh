@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Date -Format \"yyyy-MM-dd HH:mm:ss zzz\"; [System.TimeZoneInfo]::Local.Id)",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "mcp__claude-in-chrome__browser_batch",
+      "mcp__claude-in-chrome__find",
+      "mcp__claude-in-chrome__computer",
+      "mcp__claude-in-chrome__tabs_close_mcp",
+      "PowerShell(foreach \\($d in @\\(\"tutorial_coach_program\",\"tutorial_athlete_workout\",\"reel_d013\",\"reel_d014r\"\\)\\) { \"=== $d ===\"; Get-ChildItem \"D:\\\\me\\\\khodam\\\\my page\\\\peleh\\\\peleh_work\\\\$d\" | ForEach-Object { \"{0,-10} {1}\" -f \\([math]::Round\\($_.Length/1KB,1\\)\\), $_.Name } })",
+      "mcp__7be4e6e4-de72-49e3-a208-043aa4861c79__getBrandSettings",
+      "mcp__7be4e6e4-de72-49e3-a208-043aa4861c79__getScheduledPosts",
+      "PowerShell(Get-Content \"C:\\\\Users\\\\DORPA~1.SHA\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--me-khodam-my-page-peleh\\\\16836b37-5402-4ff5-83b8-8b53c9807304\\\\tasks\\\\bnm4a3qb1.output\" -Tail 20; \"---\"; Get-ChildItem \"D:\\\\me\\\\khodam\\\\my page\\\\peleh\\\\peleh_work\\\\tutorial_coach_program\" | ForEach-Object { \"{0,-9} {1}\" -f \\([math]::Round\\($_.Length/1KB,1\\)\\), $_.Name })",
+      "mcp__claude-in-chrome__read_page",
+      "mcp__claude-in-chrome__javascript_tool",
+      "mcp__claude-in-chrome__file_upload",
+      "PowerShell(Get-ChildItem \"D:\\\\me\\\\khodam\\\\my page\\\\peleh\\\\peleh_work\\\\stories_v2\" | ForEach-Object { \"{0,-8} {1}\" -f \\([math]::Round\\($_.Length/1KB,0\\)\\), $_.Name })",
+      "PowerShell(Get-ChildItem \"D:\\\\me\\\\khodam\\\\my page\\\\peleh\\\\peleh_work\\\\telegram\" | ForEach-Object { \"{0,-8} {1}\" -f \\([math]::Round\\($_.Length/1KB,0\\)\\), $_.Name })",
+      "PowerShell(Get-ChildItem \"D:\\\\me\\\\khodam\\\\my page\\\\peleh\\\\peleh_work\\\\stories_v2\\\\assets\" | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem \"D:\\\\me\\\\khodam\\\\my page\\\\peleh\\\\peleh_work\\\\carousel_d011\" | ForEach-Object { $_.Name })",
+      "mcp__scheduled-tasks__list_scheduled_tasks",
+      "mcp__70ef1088-807a-405e-8c66-07971eb7e759__deploy_edge_function"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+﻿پرامپت اصلاح‌شده‌ی رندر ۵ (R3c) · لَم روی پوف با دفتر، برای قسمت ۳ · اسم فایل: R3c.png
+مرجع: کاراکتر شیت + عکس R3a.png که خودت ساختی (لَم با کتاب). هر دو را پیوست کن.
+────────────
+
+Character LAM. Use the attached images as strict reference: same character, same body shape, same bean bag and room as the reference image of LAM reading a book.
+BODY SHAPE (most important): one solid navy (#1B2A4A) block shaped like a staircase seen from the front.
+The LEFT side of the body is ONE straight flat vertical wall with NO steps at all.
+ALL steps are only on the RIGHT edge: EXACTLY 4 steps going DOWN from the top-left corner to the lower right, like a simple stair icon.
+The front face is one flat smooth surface. Body about as wide as it is tall, compact and chunky, sitting upright, not leaning back.
+Soft matte clay designer-toy finish, rounded edges. Thin navy tube arms, mitten hands with 3 fingers and a thumb, thin navy tube legs crossed, chunky cream (#F3F0E8) sneakers with muted gold (#C9A227) side panels, no logos.
+FACELESS: smooth blank front, no eyes, no eyebrows, no mouth.
+Scene: LAM sits on a navy bean bag with an embroidered gold staircase logo, deep navy room, thin glowing gold circle halo behind, desk lamp warm light from upper left, green plant, small shelf.
+Prop: a small open notebook resting on his crossed legs BELOW the body, with a simple hand-drawn weekly table in soft pastel colours; one hand holds a pen over the page. The notebook must not cover the body.
+Camera: front view, straight on, eye level, vertical 9:16, 50mm lens, shallow depth of field, high detail.
+
+Negative prompt: pyramid, ziggurat, steps on both sides, steps on the left side, symmetric body, more than 4 steps, fewer than 4 steps, steps ascending to the right, tall narrow column body, leaning back, side view, three-quarter view, fuzzy felt, plush fur, glossy plastic, metallic, bright yellow, orange, five fingers, extra fingers, face, eyes, mouth, text, watermark, brand logos, extra characters

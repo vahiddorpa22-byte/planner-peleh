@@ -1,0 +1,43 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pelehbot-v5-tests",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-I", "-m", "http.server", "8770", "--bind", "127.0.0.1", "--directory", "peleh_work/dev/telegram_bot_v5"],
+      "port": 8770
+    },
+    {
+      "name": "peleh-bazaar-screens",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-I", "-m", "http.server", "8769", "--bind", "127.0.0.1", "--directory", "peleh_work/dev/bazaar_screens/site"],
+      "port": 8769
+    },
+    {
+      "name": "peleh-batch-2026-11-08-after",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-I", "-m", "http.server", "8768", "--bind", "127.0.0.1", "--directory", "peleh_work/dev/batch_2026-11-08/test_site/after"],
+      "port": 8768
+    },
+    {
+      "name": "peleh-sms-fix-local",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-I", "-m", "http.server", "8765", "--bind", "127.0.0.1", "--directory", "peleh_work/dev/sms_fix/site"],
+      "port": 8765
+    },
+    {
+      "name": "peleh-batch-2026-11-03",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-I", "-m", "http.server", "8766", "--bind", "127.0.0.1", "--directory", "peleh_work/dev/batch_2026-11-03/test_site"],
+      "port": 8766,
+      "url": "http://localhost:8766"
+    },
+    {
+      "name": "peleh-batch-2026-11-03-live-baseline",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-I", "-m", "http.server", "8767", "--bind", "127.0.0.1", "--directory", "peleh_work/dev/batch_2026-11-03/test_site_live"],
+      "port": 8767,
+      "url": "http://localhost:8767"
+    }
+  ]
+}

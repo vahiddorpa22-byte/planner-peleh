@@ -1,0 +1,13 @@
+﻿رندر R2 · لَم ایستاده از نمای سه‌رخ (کمی از بغل) · بدون صورت · اسم فایل: R2.png
+فوری نیست؛ فقط برای صفحه‌ی «نماهای مختلف» کاراکتر شیت.
+مرجع: دو عکس پیوست کن: R1 (لَم ایستاده از روبه‌رو که خودت ساختی) + R3c (لَم با دفتر).
+────────────
+
+Character LAM. Use the attached images as strict reference: exactly the same character as the standing front view, now turned about 35 degrees to the viewer's right (three-quarter view), so we see the front face and a little of the left side thickness.
+BODY SHAPE (most important): one solid navy (#1B2A4A) block shaped like a staircase. The LEFT side of the front face is one straight flat vertical wall with NO steps. ALL steps are only on the RIGHT edge: EXACTLY 4 steps of equal height going DOWN from the top-left corner to the lower right, like a simple stair icon. The tall left part is wide; the three lower steps are narrow. Body almost square, compact and chunky. The side of the body is a flat slab with even thickness, NO steps in depth.
+Soft matte clay designer-toy finish, rounded edges, subtle micro texture. Thin navy tube arms hanging relaxed, mitten hands with 3 fingers and a thumb, thin navy tube legs, chunky cream (#F3F0E8) sneakers with muted gold (#C9A227) side panels, no logos.
+FACELESS: smooth blank front, no eyes, no eyebrows, no mouth.
+Neutral grey (#8A8F99) seamless studio background, even soft light, soft contact shadow, full body, standing straight.
+Camera: three-quarter view, eye level, vertical 9:16, 50mm lens, high detail.
+
+Negative prompt: pyramid, ziggurat, steps on both sides, steps on the left side, steps in depth, stepped side, more than 4 steps, fewer than 4 steps, tall narrow column body, front view, side view, back view, fuzzy felt, plush fur, glossy plastic, metallic, bright yellow, orange, five fingers, extra fingers, face, eyes, mouth, text, watermark, brand logos, extra characters

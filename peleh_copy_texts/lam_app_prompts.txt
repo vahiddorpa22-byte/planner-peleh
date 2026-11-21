@@ -1,0 +1,32 @@
+لَم در اپ · پرامپت اکسسوری‌هایی که نسخه‌ی وکتوری‌شان تخت شد (برای ابزار تصویر وحید)
+رفرنس: دو عکس پیوست کن: lam_base_reference_grey.png (لَم پایه؛ همان زاویه و نور را نگه دار) + lam_character_sheet_v1.jpg. هر کادر = یک رندر؛ اسم فایل‌ها: scarf / dumbbell / volleyball / yogamat.
+خروجی: همان زاویه‌ی روبه‌رو، پس‌زمینه‌ی خاکستری صاف #8A8F99 (تیم جدا می‌کند و روی همان بوم هم‌تراز می‌کند).
+────────────
+
+▼ ۱. شال‌گردن (L2) — نسخه‌ی فعلی شبیه کمربند است
+
+The exact same navy staircase clay character LAM (faceless is fine), front view, standing, same proportions as the reference.
+He wears a chunky hand-knitted cream (#F3F0E8) scarf with thin muted gold (#C9A227) stripes, wrapped once around the middle of his body
+with a soft knot on the viewer's left and one tail hanging down to knee height, small gold fringe at the end. Thick wool texture, soft folds.
+Soft matte clay designer-toy finish, warm key light from upper left, soft navy rim light from right, plain grey #8A8F99 background.
+Negative: neck, head, extra characters, text, logos, glossy plastic, bright yellow
+
+▼ ۲. دمبل در دست (ورزش باشگاه)
+
+Same LAM character, front view, standing, holding one small navy (#1B2A4A) clay dumbbell with thin muted gold rings in his right mitten hand (viewer's right),
+3 fingers and a thumb wrapped around the handle, arm relaxed. Matte clay designer-toy finish, same lighting, plain grey #8A8F99 background.
+Negative: sport brand logos, team colours, headband, extra fingers, text
+
+▼ ۳. توپ والیبال در دست
+
+Same LAM character, front view, holding a neutral white and light-grey volleyball (no logos, no team colours) against his left side with his left mitten hand.
+Matte clay designer-toy finish, same lighting, plain grey #8A8F99 background.
+Negative: logos, text, colourful panels, extra characters
+
+▼ ۴. مت یوگا لوله‌شده کنار پا
+
+Same LAM character, front view, standing; a rolled cream (#F3F0E8) yoga mat with two thin gold bands lies on the floor beside his right sneaker.
+Matte clay finish, same lighting, plain grey #8A8F99 background, soft contact shadows.
+Negative: green, logos, text, extra characters
+
+نکته: اگر خروجی صورت داشت اشکالی ندارد؛ تیم فقط شیء را برش می‌دهد.

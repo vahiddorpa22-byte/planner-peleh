@@ -1,0 +1,71 @@
+﻿پرامپت‌های آماده‌ی لَم · هر کادر = یک رندر · کل کادر را یکجا کپی کن
+عکس مرجع همه: فقط lam_character_sheet_v1.jpg (کاراکتر شیت)
+
+▼ رندر ۱ (R1) · بدن بی‌صورت از روبه‌رو · اسم فایل: R1.png
+
+Character LAM, use the attached character sheet as the strict and only reference.
+Compact WIDE navy (#1B2A4A) body shaped as an extruded staircase with EXACTLY 4 equal steps: the tallest step on the viewer's LEFT, stepping DOWN toward the viewer's right; body wider than tall (8:7).
+Soft matte clay designer-toy finish, subtle micro texture, rounded edges.
+Thin navy tube arms, mitten hands with 3 fingers and a thumb; thin navy tube legs; chunky cream (#F3F0E8) sneakers with muted gold (#C9A227) side panels, no brand logos.
+Lighting: warm desk-lamp key light from upper left, soft cool navy rim light from right, soft contact shadows.
+Vertical 9:16, 50mm lens at character eye level, shallow depth of field, high detail.
+FACELESS version: no eyes, no eyebrows, no mouth, smooth blank navy front surface.
+Neutral grey (#8A8F99) seamless background, even studio light, full body, standing straight, arms relaxed. Front view.
+Negative prompt: tall narrow column body, fewer or more than 4 steps, steps ascending to the right, symmetric back, steps in depth, fuzzy felt, plush fur, glossy plastic, metallic, bright yellow, orange, five fingers, extra fingers, eyelashes, brand logos, text, watermark, extra characters
+
+────────────
+
+▼ رندر ۲ (R3a) · لَم روی پوف با کتاب، برای قسمت ۱ · اسم فایل: R3a.png
+
+Character LAM, use the attached character sheet as the strict and only reference.
+Compact WIDE navy (#1B2A4A) body shaped as an extruded staircase with EXACTLY 4 equal steps: the tallest step on the viewer's LEFT, stepping DOWN toward the viewer's right; body wider than tall (8:7).
+Soft matte clay designer-toy finish, subtle micro texture, rounded edges.
+Thin navy tube arms, mitten hands with 3 fingers and a thumb; thin navy tube legs; chunky cream (#F3F0E8) sneakers with muted gold (#C9A227) side panels, no brand logos.
+Lighting: warm desk-lamp key light from upper left, soft cool navy rim light from right, soft contact shadows.
+Vertical 9:16, 50mm lens at character eye level, shallow depth of field, high detail.
+FACELESS LAM lounging on a navy bean bag with an embroidered gold staircase logo, legs crossed, deep navy room, thin glowing gold circle halo behind, desk lamp warm light, green plant, small shelf.
+Holding a half-open cream book with a pretty gold tasseled bookmark.
+Negative prompt: tall narrow column body, fewer or more than 4 steps, steps ascending to the right, symmetric back, steps in depth, fuzzy felt, plush fur, glossy plastic, metallic, bright yellow, orange, five fingers, extra fingers, eyelashes, brand logos, text, watermark, extra characters
+
+────────────
+
+▼ رندر ۳ (R4) · اتاق خالی بدون لَم · اسم فایل: R4.png
+
+Empty room scene, no character at all: a navy bean bag with an embroidered gold staircase logo, deep navy room, thin glowing gold circle halo behind the bean bag, desk lamp as the only warm light from upper left, green plant, small shelf with a few books.
+Soft matte clay designer-toy style, soft cool navy rim light, soft contact shadows.
+Vertical 9:16, 50mm lens at eye level, shallow depth of field, high detail.
+Negative prompt: any character, people, text, watermark, brand logos, bright yellow, orange, glossy plastic
+
+────────────
+
+▼ رندر ۴ (R3b) · روی پوف با گوشی، برای قسمت ۲ (بعداً) · اسم فایل: R3b.png
+
+Character LAM, use the attached character sheet as the strict and only reference.
+Compact WIDE navy (#1B2A4A) body shaped as an extruded staircase with EXACTLY 4 equal steps: the tallest step on the viewer's LEFT, stepping DOWN toward the viewer's right; body wider than tall (8:7).
+Soft matte clay designer-toy finish, subtle micro texture, rounded edges.
+Thin navy tube arms, mitten hands with 3 fingers and a thumb; thin navy tube legs; chunky cream (#F3F0E8) sneakers with muted gold (#C9A227) side panels, no brand logos.
+Lighting: warm desk-lamp key light from upper left, soft cool navy rim light from right, soft contact shadows.
+Vertical 9:16, 50mm lens at character eye level, shallow depth of field, high detail.
+FACELESS LAM lounging on a navy bean bag with an embroidered gold staircase logo, legs crossed, deep navy room, thin glowing gold circle halo behind, desk lamp warm light, green plant, small shelf.
+Holding a phone with a dark blank screen.
+Negative prompt: tall narrow column body, fewer or more than 4 steps, steps ascending to the right, symmetric back, steps in depth, fuzzy felt, plush fur, glossy plastic, metallic, bright yellow, orange, five fingers, extra fingers, eyelashes, brand logos, text, watermark, extra characters
+
+────────────
+
+▼ رندر ۵ (R3c) · روی پوف با دفتر، برای قسمت ۳ (بعداً) · اسم فایل: R3c.png
+
+Character LAM, use the attached character sheet as the strict and only reference.
+Compact WIDE navy (#1B2A4A) body shaped as an extruded staircase with EXACTLY 4 equal steps: the tallest step on the viewer's LEFT, stepping DOWN toward the viewer's right; body wider than tall (8:7).
+Soft matte clay designer-toy finish, subtle micro texture, rounded edges.
+Thin navy tube arms, mitten hands with 3 fingers and a thumb; thin navy tube legs; chunky cream (#F3F0E8) sneakers with muted gold (#C9A227) side panels, no brand logos.
+Lighting: warm desk-lamp key light from upper left, soft cool navy rim light from right, soft contact shadows.
+Vertical 9:16, 50mm lens at character eye level, shallow depth of field, high detail.
+FACELESS LAM lounging on a navy bean bag with an embroidered gold staircase logo, legs crossed, deep navy room, thin glowing gold circle halo behind, desk lamp warm light, green plant, small shelf.
+Notebook with colorful simple tables on lap, pen in hand.
+Negative prompt: tall narrow column body, fewer or more than 4 steps, steps ascending to the right, symmetric back, steps in depth, fuzzy felt, plush fur, glossy plastic, metallic, bright yellow, orange, five fingers, extra fingers, eyelashes, brand logos, text, watermark, extra characters
+
+────────────
+
+▼ اگر ابزارت نتوانست بدون صورت بسازد
+
+اشکال ندارد؛ نسخه‌ی با صورت را بساز. تیم گرافیک صورت را خودش پاک می‌کند.

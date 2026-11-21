@@ -1,0 +1,28 @@
+استوری آذرجشن · نسخه‌ی ۲ · پرامپت تصویر و ویدیو
+(مشکل نسخه‌ی ۱: شمع وسط ویدیو یهو ظاهر می‌شد. این بار شمع از فریم اول روی میزه و فقط روشن می‌شه.)
+════════════════════════
+
+▼ مرحله‌ی ۱ · تصویر اول (Google Flow / Imagen)
+
+3D clay-style mascot «Lam», a navy-blue staircase-shaped character with three steps, soft matte clay texture, big expressive eyes, sitting relaxed on a navy bean bag chair in the same cozy dim reading corner as before (golden ring light glowing behind him, desk lamp and small plant on the left, wall calendar), holding a smartphone in one hand; right next to the bean bag stands a small round wooden side table, on the table: an UNLIT white candle in a short glass jar and a small matchbox; a closed book resting beside Lam on the bean bag; gold staircase logo on the bean bag, white-gold sneakers; Pixar-like soft lighting, vertical 9:16, Lam centered, face clearly visible and front-facing, neutral closed mouth, eyes open looking at camera, no text
+
+چک قبل از استفاده:
+- صورت لم از روبرو، واضح، با دهن بسته (برای هماهنگی لب)
+- میز کوچیک کاملاً تو کادر باشه و شمعِ خاموش و قوطی کبریت روش دیده بشن
+- دست لم که گوشی رو گرفته، به میز نزدیک باشه (حرکت ویدیو طبیعی‌تر می‌شه)
+
+════════════════════════
+▼ مرحله‌ی ۲ · ویدیو (Google Flow Video، از روی همین تصویر)
+
+Starting from this exact frame: Lam turns off his phone screen and calmly places the phone face-down on the small side table, then picks up the matchbox from the same table, strikes a match, and lights the white candle that has been standing on the table from the very beginning; the small flame flickers to life and warm candlelight spreads over his face and the table; he puts the matchbox down and looks at the candle with a small content smile; the golden ring light behind him glows slightly warmer; the candle and the table stay in the same place the whole time, nothing appears or disappears; slow gentle camera push-in, smooth natural motion, 6 seconds, vertical 9:16, no talking, mouth closed
+
+اگه Flow باز هم شمع رو جابه‌جا کرد یا چیزی رو یهو ظاهر کرد:
+- یه بار دیگه بساز. معمولاً از هر ۳ تا ۴ نسخه یکی تمیز درمیاد.
+- فریم آخر رو نگاه کن: شمع باید روشن و سر جای فریم اول باشه.
+
+════════════════════════
+▼ بعد از رسیدن تصویر و ویدیو (با ما)
+۱. پاک کردن صورت از تصویر اول و ساختن نسخه‌ی بی‌صورت
+۲. هماهنگی لب «آذرجشن مبارک! … امشب:» روی همین تصویر (صدای فعلی دانش، با همون اصلاح مکث و هم‌سطح‌سازی)
+۳. وصل کردن ویدیو با صدای «گوشی خاموش… شمع روشن» روی صحنه‌ی گوشی گذاشتن و روشن کردن شمع (این بار گوشی واقعاً روی میز گذاشته می‌شه، پس صدا و تصویر جور درمیان)
+۴. متن «آذرجشن مبارک 🔥» و کارت آخر «شب اول چالش»

@@ -1,0 +1,47 @@
+﻿قسمت ۱ لَم · متن آماده‌ی ElevenLabs (مدل v4)
+هر کادر را کامل کپی کن و در ElevenLabs بچسبان. برچسب‌های انگلیسی داخل [] را پاک نکن؛ مدل v4 با آن‌ها لحن را می‌سازد و خودشان خوانده نمی‌شوند.
+هر صدا یک فایل؛ [long pause] بین تکه‌ها جای حرف طرف مقابل است.
+────────────
+
+▼ صدای لَم · Danesh یا Mr O · مدل Eleven v4 · اسم فایل: lam_ep1_lam.mp3
+
+[lazy, playful, slightly proud] سه ماهه کتابم رو صفحه‌ی دوازده مونده. [short pause] [softly, admiring] ولی نشونه‌ش… خیلی قشنگه.
+[long pause]
+[hesitant, half-joking] سیزده… [short pause] [mock-serious, lower voice] نحسه.
+[long pause]
+[grumbling, unconvinced] یه صفحه که حساب نمی‌شه… [sighs] [long pause] [surprised, quietly pleased, a small laugh] خب… چهارده‌م خوندم.
+
+────────────
+
+▼ صدای پله · Sara · مدل Eleven v4 · اسم فایل: lam_ep1_peleh.mp3
+
+[warm, gentle, a smile in the voice] قشنگه. [short pause] [curious, light] صفحه‌ی سیزده چطوره؟
+[long pause]
+[calm, kind, reassuring] فقط یه صفحه. [short pause] [playful, softly] نحسیش با من.
+
+────────────
+
+▼ اگر هر تکه را جدا می‌سازی (اختیاری؛ برای مکث دقیق‌تر)
+
+لَم ۱:
+[lazy, playful, slightly proud] سه ماهه کتابم رو صفحه‌ی دوازده مونده. [short pause] [softly, admiring] ولی نشونه‌ش… خیلی قشنگه.
+
+پله ۱:
+[warm, gentle, a smile in the voice] قشنگه. [short pause] [curious, light] صفحه‌ی سیزده چطوره؟
+
+لَم ۲:
+[hesitant, half-joking] سیزده… [short pause] [mock-serious, lower voice] نحسه.
+
+پله ۲:
+[calm, kind, reassuring] فقط یه صفحه. [short pause] [playful, softly] نحسیش با من.
+
+لَم ۳:
+[grumbling, unconvinced] یه صفحه که حساب نمی‌شه… [sighs] [long pause] [surprised, quietly pleased, a small laugh] خب… چهارده‌م خوندم.
+
+────────────
+
+▼ نکته‌ها
+
+- لحن کلی: آرام و دوستانه؛ هیچ‌جا داد یا هیجان زیاد نیست. بلندترین لحظه فقط «خب… چهارده‌م خوندم» است که با لبخند و کمی ذوق گفته می‌شود.
+- اگر لهجه خوب نبود، Stability را کمی بالا ببر (حدود ۵۵ تا ۶۵) و دوباره بساز.
+- اگر برچسب‌ها اثر عجیب گذاشتند (مثلاً خنده‌ی بلند)، همان برچسب را بردار، بقیه بماند.
