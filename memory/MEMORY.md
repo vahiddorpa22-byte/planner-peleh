@@ -1,0 +1,14 @@
+- [Peleh project overview](peleh-project-overview.md) — what Peleh is, the 60k goal, and the 8 units Claude runs
+- [Peleh status](peleh-status.md) — where the work stands (2026-11-14: content through 7 Azar, scripts to 15 Azar) and what's next; read first for "where are we"
+- [Peleh decisions](peleh-decisions.md) — founder-confirmed prizes, premium trial, DM sender, Miobook
+- [Peleh content preferences](peleh-content-preferences.md) — no on-camera, baked-in audio, rich Stories, sub-teams, Persian
+- [Peleh resources](peleh-resources.md) — calendar, app zip, Metricool/Supabase ids, ElevenLabs limits, build scripts
+- [Peleh hook rules](peleh-hook-rules.md) — 2026-10-26 audit: hooks weak; frame-0 scene, ≤7 words, ≤1 question/week
+- [Peleh copy-text format](peleh-copy-text-format.md) — texts to paste go as .txt, never only PDF (Persian copy scrambles)
+- [Peleh data-first Reels](peleh-data-first-reels.md) — build next week's Reels only after Friday Insights; bad stats → new hooks
+- [Peleh mascot «لَم»](peleh-mascot-lam.md) — navy staircase character, renamed from پِلَک; advisor's naming rules
+- [Peleh senior team](peleh-senior-team.md) — 2026-11-07 org: chief advisor only reports to Vahid; 6 sections + leads; OPERATING_MANUAL
+- [Peleh worklog rule](peleh-worklog-rule.md) — every change by any agent must be appended to PELEH_WORKLOG.md (Vahid's order 2026-11-08)
+- [Vahid CV & portfolio](vahid-cv-portfolio.md) — personal CV EN/FA + portfolio in cv_vahid/, public Drive links, unconfirmed facts
+- [User: Vahid](user-vahid.md) — Peleh founder, Persian-speaking, wants finished files + schedule
+- [Lam lip-sync rule](peleh-lam-lipsync.md) — every Lam episode needs face-kit lip-sync; new pose → faceless plate + kit (ep2_assemble_v2.py)
